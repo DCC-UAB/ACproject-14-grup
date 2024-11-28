@@ -21,4 +21,15 @@ cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
 
 data = pd.read_csv(cami_csv_3s)
 data = data.iloc[0:, 1:] 
-print(data.head())
+
+x = data[["label", "spectral_centroid_mean"]]
+
+fig, ax = plt.subplots(figsize=(16, 8));
+sns.boxplot(x="label", y="spectral_centroid_mean", data=x, hue="label", palette="husl", legend=False)
+plt.title('BPM Boxplot for Genres', fontsize = 20)
+plt.xticks(fontsize = 14)
+plt.yticks(fontsize = 10);
+plt.xlabel("Genre", fontsize = 15)
+plt.ylabel("BPM", fontsize = 15)
+plt.savefig("BPM_Boxplot.png")
+plt.show()
