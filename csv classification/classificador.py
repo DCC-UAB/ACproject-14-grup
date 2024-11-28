@@ -9,12 +9,16 @@ import IPython.display as ipd
 import warnings
 import os
 
-current_dir = os.path.dirname(__file__)
+from pathlib import Path
+import pandas as pd
 
-# Construir el camí relatiu a "datasets"
-cami_csv_3s = os.path.join(current_dir, "..", "datasets", "Data1", "features_3_sec")
-cami_csv_30s = os.path.join(current_dir, "..", "datasets", "Data1", "features_3_sec")
+# Obtenir el directori actual del fitxer
+current_dir = Path(__file__).parent
+
+# Construir el camí als csv
+cami_csv_3s = current_dir.parent / "datasets" / "Data1" / "features_3_sec.csv"
+cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
 
 data = pd.read_csv(cami_csv_3s)
 data = data.iloc[0:, 1:] 
-data.head()
+print(data.head())
