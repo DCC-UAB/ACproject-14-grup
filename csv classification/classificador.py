@@ -19,17 +19,24 @@ current_dir = Path(__file__).parent
 cami_csv_3s = current_dir.parent / "datasets" / "Data1" / "features_3_sec.csv"
 cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
 
-data = pd.read_csv(cami_csv_3s)
-data = data.iloc[0:, 1:] 
+data30s = pd.read_csv(cami_csv_30s)
+data = data30s.iloc[0:, 1:] 
 
-x = data[["label", "spectral_centroid_mean"]]
+def elimina_outliers_iqr(df, columna):
+    # Calculem quartils
+    Q1 = df[columna].quantile(0.25)
+    Q3 = df[columna].quantile(0.75)
+    IQR = Q3 - Q1
 
-fig, ax = plt.subplots(figsize=(16, 8));
-sns.boxplot(x="label", y="spectral_centroid_mean", data=x, hue="label", palette="husl", legend=False)
-plt.title('BPM Boxplot for Genres', fontsize = 20)
-plt.xticks(fontsize = 14)
-plt.yticks(fontsize = 10);
-plt.xlabel("Genre", fontsize = 15)
-plt.ylabel("BPM", fontsize = 15)
-plt.savefig("BPM_Boxplot.png")
-plt.show()
+    # Definim limits 
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+
+    # Filtrem dades 
+    df_sense_outliers = df[(df[columna] >= lower_bound) & (df[columna] <= upper_bound)]
+    return df_sense_outliers
+
+# Exemple:
+data_filtrat = elimina_outliers_iqr(data, 'tempo') #ens basem amb el tempooo per treure els outliers ??
+
+data_filtrat.to_csv("dades_sense_outliers_tempo_30s.csv", index=False)
