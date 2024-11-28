@@ -22,6 +22,8 @@ cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
 data30s = pd.read_csv(cami_csv_30s)
 data = data30s.iloc[0:, 1:] 
 
+print(data['label'].value_counts())
+
 def elimina_outliers_iqr(df, columna):
     # Calculem quartils
     Q1 = df[columna].quantile(0.25)
@@ -37,6 +39,15 @@ def elimina_outliers_iqr(df, columna):
     return df_sense_outliers
 
 # Exemple:
-data_filtrat = elimina_outliers_iqr(data, 'tempo') #ens basem amb el tempooo per treure els outliers ??
+""" data_filtrat = elimina_outliers_iqr(data, 'tempo') #ens basem amb el tempooo per treure els outliers ??
 
-data_filtrat.to_csv("dades_sense_outliers_tempo_30s.csv", index=False)
+current_dir = Path(__file__).parent  # Aquest codi només funciona en scripts locals
+
+output_file = current_dir / "dades_sense_outliers_tempo_30s.csv"
+data_filtrat.to_csv(output_file, index=False) """
+
+
+dataneta30s = pd.read_csv("dades_sense_outliers_tempo_30s.csv")
+dataneta = dataneta30s.iloc[0:, 1:] 
+
+print(dataneta['label'].value_counts())
