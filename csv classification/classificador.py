@@ -12,12 +12,8 @@ import os
 current_dir = os.path.dirname(__file__)
 
 # Construir el camí relatiu a "datasets"
-datasets_dir = os.path.join(current_dir, "..", "datasets")
-print(datasets_dir)
-
-# Afegir el camí al fitxer específic
-cami_csv_3s = os.path.join(datasets_dir, "features_3_sec")
-cami_csv_30s = os.path.join(datasets_dir, "features_30_sec")
+cami_csv_3s = os.path.join(current_dir, "..", "datasets", "Data1", "features_3_sec")
+cami_csv_30s = os.path.join(current_dir, "..", "datasets", "Data1", "features_3_sec")
 
 data = pd.read_csv(cami_csv_3s)
 data = data.iloc[0:, 1:] 
