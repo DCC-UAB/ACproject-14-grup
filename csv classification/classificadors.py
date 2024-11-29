@@ -1,81 +1,77 @@
-import os
+import pandas as pd
 from pathlib import Path
 
-import librosa
-import librosa.display
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import seaborn as sns
-from IPython.display import display as ipd
-from scipy.io import wavfile as wav
+def elimina_files_amb_outliers(df, factor_iqr=1.5, llindar=0.2):
+    """
+    Elimina files amb una proporció alta d'outliers en tots els atributs numèrics.
+    
+    :param df: DataFrame d'entrada.
+    :param factor_iqr: Factor multiplicatiu per determinar els límits d'IQR (1.5 és el valor per defecte).
+    :param llindar: Proporció màxima d'outliers permesa per fila (0.2 = 20%).
+    :return: DataFrame filtrat.
+    """
+    # Còpia del DataFrame per no modificar l'original
+    df_filtrat = df.copy()
+    
+    # Selecciona només columnes numèriques (exclou 'label')
+    columnes_numeriques = df_filtrat.select_dtypes(include=['float64', 'int64']).columns
+    
+    # Inicialitza una columna per comptar outliers
+    df_filtrat['num_outliers'] = 0
+    
+    # Calcula els límits d'IQR i compta outliers per fila
+    for columna in columnes_numeriques:
+        Q1 = df[columna].quantile(0.25)
+        Q3 = df[columna].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - factor_iqr * IQR
+        upper_bound = Q3 + factor_iqr * IQR
+        
+        # Identifica outliers (valors fora dels límits) i suma'ls
+        df_filtrat['num_outliers'] += ((df[columna] < lower_bound) | (df[columna] > upper_bound)).astype(int)
+    
+    # Calcula la proporció d'outliers per fila
+    df_filtrat['proporcio_outliers'] = df_filtrat['num_outliers'] / len(columnes_numeriques)
+    
+    # Filtra les files amb una proporció d'outliers menor o igual al llindar
+    df_filtrat = df_filtrat[df_filtrat['proporcio_outliers'] <= llindar]
+    
+    # Elimina les columnes temporals
+    df_filtrat.drop(columns=['num_outliers', 'proporcio_outliers'], inplace=True)
+    
+    return df_filtrat
 
-from sklearn import preprocessing
-from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
-from sklearn.linear_model import LogisticRegression, SGDClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, roc_curve
-from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import BernoulliNB, CategoricalNB, GaussianNB, MultinomialNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
-
+# Directori actual del fitxer
 current_dir = Path(__file__).parent
 
-# Construir el camí als csv
+# Camins dels arxius CSV
 cami_csv_3s = current_dir.parent / "datasets" / "Data1" / "features_3_sec.csv"
 cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
 
+# Llegir dades
 data3s = pd.read_csv(cami_csv_3s)
 data30s = pd.read_csv(cami_csv_30s)
 
-def codificar_label(data):
-    label_encoder = preprocessing.LabelEncoder()
-    data['label'] = label_encoder.fit_transform(data['label'])
-    return data
+# Filtrar files amb molts outliers
+llindar_outliers = 0.2  # Permetre un màxim del 20% d'outliers per fila
+factor_iqr = 1.0  # Incrementa la sensibilitat als outliers reduint el factor IQR
 
-def definirXY_normalitzar(data):
-    X = data.drop(['label','filename'],axis=1) #treiem label(vaalor a predir) i filename (redundant)
-    y = data['label'] #variable independent (a predir)
-    columnes = X.columns
-    min_max_scaler = MinMaxScaler()
-    np_scaled = min_max_scaler.fit_transform(X) #escalem 
-    X = pd.DataFrame(np_scaled, columns=columnes)#nou dataset sense label i filename
-    return X, y
+print("Netejant dataset de 30s...")
+data30s_filtrat = elimina_files_amb_outliers(data30s, factor_iqr=factor_iqr, llindar=llindar_outliers)
 
- 
-def divisio_dades(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=111)
-    X_train.shape, X_test.shape, y_train.shape, y_test.shape
-    # Mostrem les dimensions
-    print(f"Train shape: {X_train.shape}, Test shape: {X_test.shape}")
-    return X_train, X_test, y_train, y_test
+print("Netejant dataset de 3s...")
+data3s_filtrat = elimina_files_amb_outliers(data3s, factor_iqr=factor_iqr, llindar=llindar_outliers)
 
+# Guardar els fitxers filtrats
+output_3s = current_dir / "dades_sense_outliers_3s.csv"
+output_30s = current_dir / "dades_sense_outliers_30s.csv"
 
-def model_assess(model, X_train, X_test, y_train, y_test, title = "Default"):
-    model.fit(X_train, y_train)
-    preds = model.predict(X_test)
-    #print(confusion_matrix(y_test, preds))
-    print('Accuracy', title, ':', round(accuracy_score(y_test, preds), 5), '\n') #calcular accuracy
+data3s_filtrat.to_csv(output_3s, index=False)
+data30s_filtrat.to_csv(output_30s, index=False)
 
+# Mostra la distribució després de filtrar
+print("Distribució 3s després de filtrar:")
+print(data3s_filtrat['label'].value_counts())
 
-data = codificar_label(data3s)
-X, y = definirXY_normalitzar(data)
-X_train, X_test, y_train, y_test = divisio_dades(X, y)
-
-# Llista de models a avaluar:
-models = [
-    (GaussianNB(), "Gaussian Naive Bayes"),
-    (BernoulliNB(), "Bernoulli Naive Bayes"),
-    (MultinomialNB(), "Multinomial Naive Bayes"),
-    (SVC(decision_function_shape="ovo"), "Support Vector Machine"),
-    (KNeighborsClassifier(n_neighbors=19), "K-Nearest Neighbors"),
-    (DecisionTreeClassifier(), "Decision Trees"),
-    (RandomForestClassifier(n_estimators=1000, max_depth=10, random_state=0), "Random Forest"),
-    (GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=0), "Gradient Boosting")
-]
-
-# Avaluació de cada model:
-for model, title in models:
-    model_assess(model, X_train, X_test, y_train, y_test, title)
+print("Distribució 30s després de filtrar:")
+print(data30s_filtrat['label'].value_counts())
