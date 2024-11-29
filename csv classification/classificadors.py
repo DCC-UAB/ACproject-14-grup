@@ -20,6 +20,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
+from xgboost import XGBClassifier, XGBRFClassifier
 
 current_dir = Path(__file__).parent
 
@@ -45,12 +46,11 @@ def definirXY_normalitzar(data):
     return X, y
 
  
-def divisio_dades(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=111)
-    X_train.shape, X_test.shape, y_train.shape, y_test.shape
-    # Mostrem les dimensions
-    print(f"Train shape: {X_train.shape}, Test shape: {X_test.shape}")
+def divisio_dades(X, y, test_size=0.3):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=111)
+    print(f"Train shape: {X_train.shape}, Test shape: {X_test.shape} (test_size={test_size})") #mostrem dimensions
     return X_train, X_test, y_train, y_test
+
 
 
 def model_assess(model, X_train, X_test, y_train, y_test, title = "Default"):
@@ -60,9 +60,12 @@ def model_assess(model, X_train, X_test, y_train, y_test, title = "Default"):
     print('Accuracy', title, ':', round(accuracy_score(y_test, preds), 5), '\n') #calcular accuracy
 
 
-data = codificar_label(data3s)
-X, y = definirXY_normalitzar(data)
-X_train, X_test, y_train, y_test = divisio_dades(X, y)
+# data = codificar_label(data30s)
+# X, y = definirXY_normalitzar(data)
+# X_train, X_test, y_train, y_test = divisio_dades(X, y)
+
+# Diferents mides de train i test
+test_sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
 
 # Llista de models a avaluar:
 models = [
@@ -73,9 +76,22 @@ models = [
     (KNeighborsClassifier(n_neighbors=19), "K-Nearest Neighbors"),
     (DecisionTreeClassifier(), "Decision Trees"),
     (RandomForestClassifier(n_estimators=1000, max_depth=10, random_state=0), "Random Forest"),
-    (GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=0), "Gradient Boosting")
+    (GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=0), "Gradient Boosting"),
+    (XGBClassifier(n_estimators=1000, learning_rate=0.05), "Cross Gradient Booster"),
+    (XGBRFClassifier(objective= 'multi:softmax'),"Cross Gradient Booster (Random Forest)" )
+
 ]
 
 # Avaluació de cada model:
-for model, title in models:
-    model_assess(model, X_train, X_test, y_train, y_test, title)
+# (data3s, "3 seconds"),
+for data, tipus in [ (data3s, "3 seconds")]: #diferents datasets
+    print(f"\n### Results for {tipus} data ###")
+    data = codificar_label(data)
+    X, y = definirXY_normalitzar(data)
+
+    for test_size in test_sizes: #diferents mides
+        print(f"\n--- Test size: {test_size} ---")
+        X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=test_size)
+
+        for model, title in models:
+            model_assess(model, X_train, X_test, y_train, y_test, title)
