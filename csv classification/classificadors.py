@@ -3,6 +3,7 @@ from pathlib import Path
 
 import librosa
 import librosa.display
+import json
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -59,6 +60,30 @@ def model_assess(model, X_train, X_test, y_train, y_test, title = "Default"):
     #print(confusion_matrix(y_test, preds))
     print('Accuracy', title, ':', round(accuracy_score(y_test, preds), 5), '\n') #calcular accuracy
 
+def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats, dataset):
+    """
+    Avaluar un model i guardar l'accuracy al diccionari de resultats.
+    """
+    model.fit(X_train, y_train)
+    preds = model.predict(X_test)
+    accuracy = round(accuracy_score(y_test, preds), 5)
+    
+    # Assegura't que la clau del model existeix al dataset
+    if title not in resultats[dataset]:
+        resultats[dataset][title] = []
+    
+    # Afegeix l'accuracy
+    resultats[dataset][title].append(accuracy)
+
+
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats.json"):
+    """
+    Guarda els resultats en un fitxer JSON.
+    """
+    with open(nom_fitxer, "w") as fitxer:
+        json.dump(resultats, fitxer, indent=4)
+    print(f"Resultats guardats a {nom_fitxer}")
+
 
 # data = codificar_label(data30s)
 # X, y = definirXY_normalitzar(data)
@@ -82,16 +107,22 @@ models = [
 
 ]
 
-# Avaluació de cada model:
-# (data3s, "3 seconds"),
-for data, tipus in [ (data3s, "3 seconds")]: #diferents datasets
-    print(f"\n### Results for {tipus} data ###")
+resultats = {"3 seconds": {}, "30 seconds": {}}
+
+# Avaluació de cada dataset
+for data, tipus in [(data3s, "3 seconds"), (data30s, "30 seconds")]:  # Diferents datasets
+    print(f"\n### Avaluant {tipus} data ###")
     data = codificar_label(data)
     X, y = definirXY_normalitzar(data)
 
-    for test_size in test_sizes: #diferents mides
+    for test_size in test_sizes:  # Diferents mides
         print(f"\n--- Test size: {test_size} ---")
         X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=test_size)
 
         for model, title in models:
-            model_assess(model, X_train, X_test, y_train, y_test, title)
+            print(f"\nModel: {title}")
+            model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats, dataset=tipus)
+
+
+# Guarda els resultats al fitxer JSON
+guardar_resultats_a_json(resultats)
