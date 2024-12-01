@@ -112,8 +112,8 @@ if __name__ == "__main__":
     current_dir = Path(__file__).parent
 
     # Construir el camí als csv
-    cami_csv_3s = current_dir.parent / "datasets" / "dades_sense_outliers_3s.csv"
-    cami_csv_30s = current_dir.parent / "datasets" / "dades_sense_outliers_30s.csv"
+    cami_csv_3s = current_dir.parent / "datasets" / "Data1" / "features_3_sec.csv"
+    cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
 
     data3s = pd.read_csv(cami_csv_3s)
     data30s = pd.read_csv(cami_csv_30s)
