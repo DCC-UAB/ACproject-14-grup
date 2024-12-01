@@ -76,6 +76,10 @@ random_search = RandomizedSearchCV(
     random_state=42
 )
 
+data30s = codificar_label(data30s)  # Codificar etiquetes
+X, y = definirXY_normalitzar(data30s)  # Definir X i y
+X_train, X_test, y_train, y_test = divisio_dades(X, y)
+
 # Entrenar RandomizedSearchCV
 print("Iniciant cerca aleatòria d'hiperparàmetres per XGBClassifier...")
 random_search.fit(X_train, y_train)

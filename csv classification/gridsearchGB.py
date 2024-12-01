@@ -71,7 +71,8 @@ grid_search = GridSearchCV(
     n_jobs=-1
 )
 
-# Ajustem les dades
+data30s = codificar_label(data30s)  # Codificar etiquetes
+X, y = definirXY_normalitzar(data30s)  # Definir X i y
 X_train, X_test, y_train, y_test = divisio_dades(X, y)
 
 # Entrenem GridSearchCV
