@@ -41,37 +41,39 @@ def elimina_files_amb_outliers(df, factor_iqr=1.5, llindar=0.2):
     
     return df_filtrat
 
-# Directori actual del fitxer
-current_dir = Path(__file__).parent
+if __name__ == "__main__":
 
-# Camins dels arxius CSV
-cami_csv_3s = current_dir.parent / "datasets" / "Data1" / "features_3_sec.csv"
-cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
+    # Directori actual del fitxer
+    current_dir = Path(__file__).parent
 
-# Llegir dades
-data3s = pd.read_csv(cami_csv_3s)
-data30s = pd.read_csv(cami_csv_30s)
+    # Camins dels arxius CSV
+    cami_csv_3s = current_dir.parent / "datasets" / "Data1" / "features_3_sec.csv"
+    cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
 
-# Filtrar files amb molts outliers
-llindar_outliers = 0.2  # Permetre un màxim del 20% d'outliers per fila
-factor_iqr = 1.0  # Incrementa la sensibilitat als outliers reduint el factor IQR
+    # Llegir dades
+    data3s = pd.read_csv(cami_csv_3s)
+    data30s = pd.read_csv(cami_csv_30s)
 
-print("Netejant dataset de 30s...")
-data30s_filtrat = elimina_files_amb_outliers(data30s, factor_iqr=factor_iqr, llindar=llindar_outliers)
+    # Filtrar files amb molts outliers
+    llindar_outliers = 0.2  # Permetre un màxim del 20% d'outliers per fila
+    factor_iqr = 1.0  # Incrementa la sensibilitat als outliers reduint el factor IQR
 
-print("Netejant dataset de 3s...")
-data3s_filtrat = elimina_files_amb_outliers(data3s, factor_iqr=factor_iqr, llindar=llindar_outliers)
+    print("Netejant dataset de 30s...")
+    data30s_filtrat = elimina_files_amb_outliers(data30s, factor_iqr=factor_iqr, llindar=llindar_outliers)
 
-# Guardar els fitxers filtrats
-output_3s = current_dir / "dades_sense_outliers_3s.csv"
-output_30s = current_dir / "dades_sense_outliers_30s.csv"
+    print("Netejant dataset de 3s...")
+    data3s_filtrat = elimina_files_amb_outliers(data3s, factor_iqr=factor_iqr, llindar=llindar_outliers)
 
-data3s_filtrat.to_csv(output_3s, index=False)
-data30s_filtrat.to_csv(output_30s, index=False)
+    # Guardar els fitxers filtrats
+    output_3s = current_dir.parent / "datasets" / "dades_sense_outliers_3s.csv"
+    output_30s = current_dir.parent / "datasets" / "dades_sense_outliers_30s.csv"
 
-# Mostra la distribució després de filtrar
-print("Distribució 3s després de filtrar:")
-print(data3s_filtrat['label'].value_counts())
+    data3s_filtrat.to_csv(output_3s, index=False)
+    data30s_filtrat.to_csv(output_30s, index=False)
 
-print("Distribució 30s després de filtrar:")
-print(data30s_filtrat['label'].value_counts())
+    # Mostra la distribució després de filtrar
+    print("Distribució 3s després de filtrar:")
+    print(data3s_filtrat['label'].value_counts())
+
+    print("Distribució 30s després de filtrar:")
+    print(data30s_filtrat['label'].value_counts())

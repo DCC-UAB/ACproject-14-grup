@@ -8,9 +8,9 @@ nom_fitxer_json = "resultats.json"
 with open(nom_fitxer_json, "r") as fitxer:
     resultats = json.load(fitxer)
 
-# Convertir els resultats en DataFrames
-df_3s = pd.DataFrame(resultats["3 seconds"])
-df_30s = pd.DataFrame(resultats["30 seconds"])
+# Convertir els resultats en DataFrames (només la accuracy)
+df_3s = pd.DataFrame({model: data["accuracy"] for model, data in resultats["3 seconds"].items()})
+df_30s = pd.DataFrame({model: data["accuracy"] for model, data in resultats["30 seconds"].items()})
 
 # Definir funcions de gràfics
 def plot_accuracy(dataframe, titol="Default"):
