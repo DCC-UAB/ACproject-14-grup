@@ -29,7 +29,7 @@ def codificar_label(data):
     return data
 
 def definirXY_normalitzar(data):
-    X = data.drop(['genre'],axis=1) #treiem label(vaalor a predir) 
+    X = data.drop(['genre', 'segment'],axis=1) #treiem label(vaalor a predir) 
     y = data['genre'] #variable independent (a predir)
     columnes = X.columns
     min_max_scaler = MinMaxScaler()
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     current_dir = Path(__file__).parent.resolve()  # Directori actual del script
     
     # Camí absolut al fitxer CSV
-    cami_csv = current_dir / "audio_features.csv"  # Ajusta el camí per apuntar al fitxer directament
+    cami_csv = current_dir / "audio_features_prova2.csv"  # Ajusta el camí per apuntar al fitxer directament
 
 
     data_audio = pd.read_csv(cami_csv)
