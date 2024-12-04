@@ -102,9 +102,12 @@ def guardar_resultats_a_json(resultats, nom_fitxer="resultats.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
-    with open(nom_fitxer, "w") as fitxer:
+    current_dir = Path(__file__).parent.resolve()  # Directori actual del script
+    fitxer_json = current_dir / nom_fitxer  # Camí complet al fitxer JSON
+
+    with open(fitxer_json, "w") as fitxer:
         json.dump(resultats, fitxer, indent=4)
-    print(f"Resultats guardats a {nom_fitxer}")
+    print(f"Resultats guardats a {fitxer_json}")
 
 
 if __name__ == "__main__":
@@ -132,21 +135,21 @@ if __name__ == "__main__":
     ]
 
     # Resultats per accuracy només
-    # resultats = {"3 seconds": {}, "30 seconds": {}}  # Comentat perquè no el necessitem ara
+    resultats = {"audio": {}}  # Comentat perquè no el necessitem ara
 
     # Avaluació de cada dataset
-    for data, tipus in [(data_audio, "3 seconds")]:  # Diferents datasets
+    for data, tipus in [(data_audio, "audio")]:  # Diferents datasets
         data = codificar_label(data)
         X, y = definirXY_normalitzar(data)
         X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=0.2)
 
         for model, title in models:
-            print(f"\nModel: {title}")
-            model.fit(X_train, y_train)
-            preds = model.predict(X_test)
-            print('Accuracy', title, ':', round(accuracy_score(y_test, preds), 5), '\n')  # Mostrem només accuracy
+            # print(f"\nModel: {title}")
+            # model.fit(X_train, y_train)
+            # preds = model.predict(X_test)
+            #print('Accuracy', title, ':', round(accuracy_score(y_test, preds), 5), '\n')  # Mostrem només accuracy
 
-            # model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats, dataset=tipus)
+            model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats, dataset=tipus)
 
     # Guardar els resultats al JSON (ara no necessari, per això ho comentem)
-    # guardar_resultats_a_json(resultats)
+    guardar_resultats_a_json(resultats)
