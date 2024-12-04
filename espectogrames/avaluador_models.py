@@ -1,7 +1,3 @@
-"""
-MODELS a implementar:
-
-"""
 
 from preprocessing import preprocess_images
 base_dir = "ACproject-14-grup/datasets/Data1/images_original"
@@ -48,7 +44,14 @@ xgb = XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state
 xgb_rf = XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42)
 
 # Funció d'avaluació models (enrecordar-se després d'aplicar grid search!!!!)
-...
+import time
+# Entrenament model
+def train(model, X_train, y_train):
+    # Temps que triga en entrenar-se
+    start_train = time.time()
+    model.fit(X_train, y_train)
+    train_time = time.time() - start_train
+    return f"Entrenant model: {model.__class__.__name__}", f"Temps trigat: {train_time}"
 
 # Funció on s'incorpora els models
 ...
