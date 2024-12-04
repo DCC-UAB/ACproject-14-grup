@@ -46,6 +46,8 @@ xgb_rf = XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_
 # Funció d'avaluació models (enrecordar-se després d'aplicar grid search!!!!)
 import time
 from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, log_loss, confusion_matrix)
+import matplotlib.pyplot as plt
+import seaborn as sns
 # Entrenament model
 def train(model, X_train, y_train):
     # Temps que triga en entrenar-se
@@ -76,7 +78,15 @@ def evaluate(y_test, y_pred):
             "conf_matrix": conf_matrix}
 
 # Generació de plots
+def plot_evaluate(metrics, model_name):
+    plt.figure(figsize=(10, 6))
+    plt.bar(["Accuracy", "Precision", "Recall", "F1 Score"], [round(metrics["accuracy"], 2), round(metrics["precision"], 2), 
+            round(metrics["recall"], 2), round(metrics["f1_score"], 2)], color=["blue", "purple", "green", "orange"])
+    plt.title(f"{model_name} - Metrics")
+    plt.ylim(0, 1)
+    plt.ylabel("Score")
+    plt.xlabel("Metrics")
+    plt.show()
 
+# Funció final on s'incorpora els models per avaluar
 
-# Funció on s'incorpora els models
-...
