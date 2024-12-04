@@ -118,9 +118,6 @@ if __name__ == "__main__":
     data3s = pd.read_csv(cami_csv_3s)
     data30s = pd.read_csv(cami_csv_30s)
 
-    # Diferents mides de train i test
-    test_sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
-
     # Llista de models a avaluar:
     models = [
         (GaussianNB(), "Gaussian Naive Bayes"),
@@ -144,13 +141,11 @@ if __name__ == "__main__":
         data = codificar_label(data)
         X, y = definirXY_normalitzar(data)
 
-        for test_size in test_sizes:  # Diferents mides
-            print(f"\n--- Test size: {test_size} ---")
-            X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=test_size)
+        X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=0.2)
 
-            for model, title in models:
-                print(f"\nModel: {title}")
-                model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats, dataset=tipus)
+        for model, title in models:
+            print(f"\nModel: {title}")
+            model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats, dataset=tipus)
 
 
     # Guarda els resultats al fitxer JSON
