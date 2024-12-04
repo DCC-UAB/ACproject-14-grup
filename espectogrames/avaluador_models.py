@@ -51,7 +51,16 @@ def train(model, X_train, y_train):
     start_train = time.time()
     model.fit(X_train, y_train)
     train_time = time.time() - start_train
-    return f"Entrenant model: {model.__class__.__name__}", f"Temps trigat: {train_time}"
+    return f"Entrenant model: {model.__class__.__name__}", model,f"Temps trigat: {train_time}"
+
+# Predicting model
+def testing(model, X_test, y_test):
+    # després aplicar probabilitats!!!
+    start_test = time.time()
+    y_pred = model.predict(X_test)
+    test_time = time.time() - start_test
+    return f"Predicting model: {model.__class__.__name__}", y_pred,f"Temps trigat: {test_time}"
+    
 
 # Funció on s'incorpora els models
 ...
