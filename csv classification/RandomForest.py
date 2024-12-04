@@ -16,6 +16,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score, KFold
+from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier, XGBRFClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RandomizedSearchCV
@@ -97,6 +98,37 @@ def guardar_resultats_a_json(resultats, nom_fitxer="resultats_random_forest_clea
         json.dump(resultats, fitxer, indent=4)
     print(f"Resultats guardats a {fitxer_json}")
 
+def grid_search_hyperparameter_tuning(model, param_grid, X, y, cv_splits=5):
+    """
+    Realitza Grid Search per a un model i mostra els millors hiperparàmetres i mètriques.
+    :param model: El model base (ex: RandomForestClassifier)
+    :param param_grid: Diccionari amb els hiperparàmetres a explorar
+    :param X: Dades d'entrada (features)
+    :param y: Etiquetes (labels)
+    :param cv_splits: Nombre de particions per al cross-validation dins del Grid Search
+    :return: L'objecte GridSearchCV entrenat
+    """
+    # Configurar GridSearchCV
+    grid_search = GridSearchCV(
+        estimator=model,
+        param_grid=param_grid,
+        scoring='accuracy',
+        cv=cv_splits,
+        n_jobs=-1,
+        verbose=1
+    )
+
+    # Executar Grid Search
+    print("\n--- Iniciant Grid Search ---")
+    grid_search.fit(X, y)
+
+    # Resultats
+    print("\n--- Millors Paràmetres ---")
+    print(grid_search.best_params_)
+    print("\n--- Millor Score ---")
+    print(f"Accuracy: {grid_search.best_score_:.5f}")
+
+    return grid_search
 
 if __name__ == "__main__":
 
@@ -122,8 +154,19 @@ if __name__ == "__main__":
         X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=0.2)
 
         # Avaluar i guardar resultats
-        model_assess_to_json(random_forest, X_train, X_test, y_train, y_test, model_title, resultats, dataset=tipus)
+        #model_assess_to_json(random_forest, X_train, X_test, y_train, y_test, model_title, resultats, dataset=tipus)
 
+            # Definir el model i hiperparàmetres
+        random_forest = RandomForestClassifier(random_state=0)
+        param_grid_rf = {
+            "n_estimators": [100, 500, 1000],
+            "max_depth": [5, 10, 20, None],
+            "min_samples_split": [2, 5, 10],
+            "min_samples_leaf": [1, 2, 4],
+        }
+
+        # Realitzar Grid Search
+        grid_search_results = grid_search_hyperparameter_tuning(random_forest, param_grid_rf, X, y, cv_splits=5)
     # Guarda els resultats al fitxer JSON
-    guardar_resultats_a_json(resultats)
+    #guardar_resultats_a_json(resultats)
 
