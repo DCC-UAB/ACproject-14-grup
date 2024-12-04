@@ -21,10 +21,13 @@ def load_images(base_dir, img_size=(128, 128),  color=False):
                 else:
                     flag = cv2.IMREAD_GRAYSCALE
                 img = cv2.imread(img_path, flag)
-                if img is not None:
-                    img_resized = cv2.resize(img, img_size) # Uniformització imatges
-                    data.append((img_resized / 255.0).flatten()) # Normalització de les imatges i convertir-les a vector unidimensional
-                    labels.append(genre)
+                if img is None:
+                    print(f"No s'ha pogut llegir la imatge: {img_path}")
+                    continue
+                img_resized = (cv2.resize(img, img_size) / 255.0).astype(np.float32) # Normalització imatges
+                data.append(img_resized.flatten()) # Convertir-les a vectors unidimensionals
+                labels.append(genre)
+                    
     
     if not data or not labels:
         raise ValueError("No s'han processat dades. Comprova el directori d'entrada.")
