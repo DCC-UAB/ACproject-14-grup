@@ -51,7 +51,7 @@ def preprocess_images(base_dir, img_size=(128, 128), test_size=0.2, min_samples_
     X_train, X_test, y_train, y_test = split_dataset(data, labels_encoded, test_size)
     return X_train, X_test, y_train, y_test, label_encoder
 
-base_dir = "ACproject-14-grup\datasets\Data1\images_original"
+base_dir = "ACproject-14-grup/datasets/Data1/images_original"
 X_train, X_test, y_train, y_test, label_encoder = preprocess_images(base_dir)
 
 print(f"Imatges d'entrenament: {X_train.shape}, Imatges de test: {X_test.shape}")
