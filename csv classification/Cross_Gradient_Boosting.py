@@ -19,7 +19,7 @@ from sklearn.model_selection import cross_val_score, KFold
 from xgboost import XGBClassifier, XGBRFClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RandomizedSearchCV
-from scipy.stats import randint
+from scipy.stats import randint, uniform
 
 current_dir = Path(__file__).parent
 
@@ -86,7 +86,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     }
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Cross_Gradient_Boosting_clean_dataset.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Cross_Gradient_Boosting_best_hyperparametresP2.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -96,6 +96,81 @@ def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Cross_Gradient_Boo
     with open(fitxer_json, "w") as fitxer:
         json.dump(resultats, fitxer, indent=4)
     print(f"Resultats guardats a {fitxer_json}")
+
+def grid_search_xgb(X_train, y_train):
+    """
+    Realitza una cerca d'hiperparàmetres utilitzant GridSearchCV per a XGBClassifier.
+    """
+    #PROVA 1 
+    #{'colsample_bytree': 0.8, 'learning_rate': 0.1, 'max_depth': 6, 'n_estimators': 500, 'subsample': 0.8}
+    # param_grid = {
+    #     'n_estimators': [100, 200, 500],
+    #     'max_depth': [3, 6, 10],
+    #     'learning_rate': [0.01, 0.1, 0.3],
+    #     'subsample': [0.8, 1.0],
+    #     'colsample_bytree': [0.8, 1.0],
+    # }
+    
+    #PROVA 2
+    #DONAT ELS MILLORS PARAMETRES DE LA PROVA 1 SEGUIM FENT CERCA PER VALORS PROEPERS ALS OBTINGUTS 
+    
+    param_grid = {
+    'learning_rate': [0.05,  0.1, 0.15],
+    'max_depth': [ 5, 6, 7],
+    'n_estimators': [400, 500, 600],
+    'subsample': [0.75, 0.8, 0.85],
+    'colsample_bytree': [0.75, 0.8, 0.85]
+}
+
+   
+    xgb = XGBClassifier(tree_method='hist', random_state=42)
+    grid_search = GridSearchCV(estimator=xgb, param_grid=param_grid, cv=5, scoring='f1_weighted', verbose=2, n_jobs=-1)
+
+   
+    grid_search.fit(X_train, y_train)
+    
+    print("\nMillors hiperparàmetres trobats:")
+    print(grid_search.best_params_)
+    print("\nMillor puntuació obtinguda (F1-weighted):")
+    print(grid_search.best_score_)
+
+    return grid_search.best_estimator_
+
+def random_seach_hyperparameters(X_train, y_train):
+    
+    xgb = XGBClassifier(tree_method='hist', random_state=42)
+     # Definir el grid d'hiperparàmetres
+    param_distributions = {
+        'n_estimators': randint(100, 1000),
+        'max_depth': randint(3, 15),
+        'learning_rate': uniform(0.01, 0.2),
+        'subsample': uniform(0.7, 0.3),
+        'colsample_bytree': uniform(0.7, 0.3),
+        'gamma': uniform(0, 5),
+        'reg_alpha': uniform(0, 1),
+        'reg_lambda': uniform(1, 10)
+    }
+     # Configura RandomizedSearchCV
+    random_search = RandomizedSearchCV(
+        estimator=xgb,
+        param_distributions=param_distributions,
+        n_iter=2000,  # Nombre de combinacions aleatòries
+        scoring='accuracy',  # Pots canviar la mètrica
+        cv=5,
+        verbose=2,
+        n_jobs=-1,
+        random_state=42
+    )
+
+    
+    random_search.fit(X_train, y_train)
+
+    # Resultats
+    print("\nMillors hiperparàmetres trobats amb RandomizedSearchCV:")
+    print(random_search.best_params_)
+
+    return random_search.best_estimator_
+    
 
 
 if __name__ == "__main__":
@@ -110,8 +185,8 @@ if __name__ == "__main__":
     resultats = {}
 
     # Model Random Forest
-    xgb = XGBClassifier(tree_method='hist', random_state=42)
-    model_title = "Cross Gradient Boosting"
+    # xgb = XGBClassifier(tree_method='hist', random_state=42)
+    # model_title = "Cross Gradient Boosting"
 
     # Avaluació de cada dataset
     for data, tipus in [(data3s, "3 seconds")]:  # Diferents datasets
@@ -120,10 +195,21 @@ if __name__ == "__main__":
         X, y = definirXY_normalitzar(data)
 
         X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=0.2)
+        # millor_model = grid_search_xgb(X_train, y_train)
+        millor_model = random_seach_hyperparameters(X_train, y_train)
+        # millor_model = XGBClassifier(
+        #     colsample_bytree=0.85,
+        #     learning_rate=0.15,
+        #     max_depth=7,
+        #     n_estimators=400,
+        #     subsample=0.8,
+        #     tree_method='hist',
+        #     random_state=42
+        # )
 
-        # Avaluar i guardar resultats
-        model_assess_to_json(xgb, X_train, X_test, y_train, y_test, model_title, resultats, dataset=tipus)
+        # Avaluar i guardar resultats del model optimitzat
+        # model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized XGBClassifier", resultats, dataset=tipus)
 
     # Guarda els resultats al fitxer JSON
-    guardar_resultats_a_json(resultats)
+    # guardar_resultats_a_json(resultats)
 
