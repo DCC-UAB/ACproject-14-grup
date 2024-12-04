@@ -88,5 +88,16 @@ def plot_evaluate(metrics, model_name):
     plt.xlabel("Metrics")
     plt.show()
 
+    #Matriu de confusió
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(metrics["conf_matrix"],
+                annot=True,
+                fmt="d",
+                cmap="viridis")
+    plt.title(f"{model_name} - Confusion Matrix")
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.show()
+
 # Funció final on s'incorpora els models per avaluar
 
