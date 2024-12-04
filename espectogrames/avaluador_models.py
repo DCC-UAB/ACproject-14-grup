@@ -45,6 +45,7 @@ xgb_rf = XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_
 
 # Funció d'avaluació models (enrecordar-se després d'aplicar grid search!!!!)
 import time
+from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, log_loss, confusion_matrix)
 # Entrenament model
 def train(model, X_train, y_train):
     # Temps que triga en entrenar-se
@@ -54,13 +55,28 @@ def train(model, X_train, y_train):
     return f"Entrenant model: {model.__class__.__name__}", model,f"Temps trigat: {train_time}"
 
 # Predicting model
-def testing(model, X_test, y_test):
-    # després aplicar probabilitats!!!
+def test(model, X_test):
+    # després aplicar probabilitats!!! i afegir al evaluate logloss i roc
     start_test = time.time()
     y_pred = model.predict(X_test)
     test_time = time.time() - start_test
     return f"Predicting model: {model.__class__.__name__}", y_pred,f"Temps trigat: {test_time}"
-    
+
+# Avaluant model
+def evaluate(y_test, y_pred):
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, average="weighted")
+    recall = recall_score(y_test, y_pred, average="weighted")
+    f1 = f1_score(y_test, y_pred, average="weighted")
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    return {"accuracy": accuracy,
+            "precision": precision,
+            "recall": recall,
+            "f1_score": f1,
+            "conf_matrix": conf_matrix}
+
+# Generació de plots
+
 
 # Funció on s'incorpora els models
 ...
