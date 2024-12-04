@@ -101,3 +101,20 @@ def models_evaluate(X_train, X_test, y_train, y_test, label_encoder):
         print(f"\n-----{nom_model} finalitzat!!!-----")
 
     return resultats
+
+
+# Execució
+base_dir = "ACproject-14-grup/datasets/Data1/images_original"
+X_train, X_test, y_train, y_test, label_encoder = preprocess_images(base_dir)
+resultats = models_evaluate(X_train, X_test, y_train, y_test, label_encoder)
+
+# Analitzar els resultats
+for model_name, metrics in resultats.items():
+    print(f"\nResultats de {model_name}:")
+    if "error" in metrics:
+        print(f"  Error: {metrics['error']}")
+    else:
+        print(f"  Accuracy: {metrics['accuracy']:.2f}")
+        print(f"  Training Time: {metrics['train_time']:.2f} seconds")
+        print(f"  Prediction Time: {metrics['test_time']:.2f} seconds")
+
