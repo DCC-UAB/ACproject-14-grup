@@ -10,6 +10,7 @@ import pandas as pd
 import seaborn as sns
 from IPython.display import display as ipd
 from scipy.io import wavfile as wav
+import time
 
 from sklearn import preprocessing
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
@@ -77,31 +78,34 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     # Assegurar que existeix la clau del model
     if title not in resultats[dataset]:
         resultats[dataset][title] = {
-            "accuracy": [],
-            "precision": [],
-            "recall": [],
-            "f1_score": [],
-            "roc_auc": [],
-            "accuracy_gap": [],
-            "f1_gap": []
+            "accuracy": 0,
+            "precision": 0,
+            "recall": 0,
+            "f1_score": 0,
+            "roc_auc": 0,
+            "accuracy_gap": 0,
+            "f1_gap": 0,
         }
 
     # Afegir mètriques al diccionari
-    resultats[dataset][title]["accuracy"].append(accuracy_test)
-    resultats[dataset][title]["precision"].append(precision_test)
-    resultats[dataset][title]["recall"].append(recall_test)
-    resultats[dataset][title]["f1_score"].append(f1_test)
+    resultats[dataset][title]["accuracy"]=accuracy_test
+    resultats[dataset][title]["precision"]=precision_test
+    resultats[dataset][title]["recall"]=recall_test
+    resultats[dataset][title]["f1_score"]=f1_test
     if roc_auc_test is not None:
-        resultats[dataset][title]["roc_auc"].append(roc_auc_test)
-    resultats[dataset][title]["accuracy_gap"].append(accuracy_gap)
-    resultats[dataset][title]["f1_gap"].append(f1_gap)
+        resultats[dataset][title]["roc_auc"]=roc_auc_test
+    resultats[dataset][title]["accuracy_gap"]=accuracy_gap
+    resultats[dataset][title]["f1_gap"]=f1_gap
 
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_all_models.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
+    current_dir = Path(__file__).parent.resolve()  # Directori actual del script
+    fitxer_json = current_dir / nom_fitxer  # Camí complet al fitxer JSON
+
     with open(nom_fitxer, "w") as fitxer:
         json.dump(resultats, fitxer, indent=4)
     print(f"Resultats guardats a {nom_fitxer}")
