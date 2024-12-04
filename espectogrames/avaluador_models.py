@@ -1,7 +1,6 @@
 """
 MODELS a implementar:
-KMeans, SVM, 
-RandomForest, GradientBoosting, XGBoost (XGB, XGBRF)
+
 """
 
 from preprocessing import preprocess_images
@@ -30,4 +29,26 @@ from sklearn.tree import DecisionTreeClassifier
 # Decission Tree
 decission_tree = DecisionTreeClassifier(random_state=42)
 
+from sklearn.cluster import KMeans
+# K-means
+kmeans = KMeans(n_clusters=3, random_state=42)
 
+from sklearn.svm import SVC
+# SVC
+svc = SVC(kernel="rbf", probability=True, random_state=42)
+
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+# Random Forest i Gradient Boosting
+random_forest = RandomForestClassifier(n_estimators=100, random_state=42)
+gradient_boosting = GradientBoostingClassifier(random_state=42)
+
+from xgboost import XGBClassifier, XGBRFClassifier
+#XGBoost
+xgb = XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42)
+xgb_rf = XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42)
+
+# Funció d'avaluació models (enrecordar-se després d'aplicar grid search!!!!)
+...
+
+# Funció on s'incorpora els models
+...
