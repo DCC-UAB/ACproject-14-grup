@@ -1,7 +1,7 @@
 
 from preprocessing import preprocess_images
-from sklearn.naive_bayes import BernoulliNB, CategoricalNB, GaussianNB, MultinomialNB
-from sklearn.linear_model import LogisticRegression, SGDClassifier
+from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
+from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.cluster import KMeans
@@ -13,37 +13,7 @@ from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_s
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Naive Bayes
-naive_bernoulli = BernoulliNB()
-naive_categorical = CategoricalNB()
-naive_gaussian = GaussianNB()
-naive_multinomial = MultinomialNB()
-
-# Logistic Regression i SDG
-logistic_regression = LogisticRegression(max_iter=500, random_state=42)
-sdg = SGDClassifier(random_state=42)
-
-# KNN
-knn = KNeighborsClassifier(n_neighbors=5)
-
-# Decission Tree
-decission_tree = DecisionTreeClassifier(random_state=42)
-
-# K-means
-kmeans = KMeans(n_clusters=3, random_state=42)
-
-# SVC
-svc = SVC(kernel="rbf", probability=True, random_state=42)
-
-# Random Forest i Gradient Boosting
-random_forest = RandomForestClassifier(n_estimators=100, random_state=42)
-gradient_boosting = GradientBoostingClassifier(random_state=42)
-
-#XGBoost
-xgb = XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42)
-xgb_rf = XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42)
-
-# Funció d'avaluació models (enrecordar-se després d'aplicar grid search!!!!)
+# (enrecordar-se després d'aplicar grid search!!!!)
 
 # Entrenament model
 def train(model, X_train, y_train):
@@ -98,3 +68,14 @@ def plot_evaluate(metrics, model_name):
 
 # Funció final on s'incorpora els models per avaluar
 def models_evaluate(X_train, X_test, y_train, y_test, label_encoder):
+    models = [(BernoulliNB(), "Naive Bayes (BernoulliNB)"),
+            (GaussianNB(), "Naive Bayes (GaussianNB)"),
+            (MultinomialNB(), "Naive Bayes (MultinomialNB)"),
+            (LogisticRegression(max_iter=500, random_state=42), "Logistic Regression"),
+            (KNeighborsClassifier(n_neighbors=5), "K-Nearest Neighbors"),
+            (DecisionTreeClassifier(random_state=42), "Decision Tree"),
+            (SVC(kernel="rbf", probability=True, random_state=42), "Support Vector Machine (SVM)"),
+            (RandomForestClassifier(n_estimators=100, random_state=42), "Random Forest"),
+            (GradientBoostingClassifier(random_state=42), "Gradient Boosting"),
+            (XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGB)"),
+            (XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGBRF)")]
