@@ -1,6 +1,6 @@
 """
 MODELS a implementar:
-KNN, DecisionTree, KMeans, SVM, 
+KMeans, SVM, 
 RandomForest, GradientBoosting, XGBoost (XGB, XGBRF)
 """
 
@@ -22,5 +22,12 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 logistic_regression = LogisticRegression(max_iter=500, random_state=42)
 sdg = SGDClassifier(random_state=42)
 
+from sklearn.neighbors import KNeighborsClassifier
+# KNN
+knn = KNeighborsClassifier(n_neighbors=5)
+
+from sklearn.tree import DecisionTreeClassifier
+# Decission Tree
+decission_tree = DecisionTreeClassifier(random_state=42)
 
 
