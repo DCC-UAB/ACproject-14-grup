@@ -68,6 +68,7 @@ def plot_evaluate(metrics, model_name):
 
 # Funció final on s'incorpora els models per avaluar
 def models_evaluate(X_train, X_test, y_train, y_test, label_encoder):
+    resultats = []
     models = [(BernoulliNB(), "Naive Bayes (BernoulliNB)"),
             (GaussianNB(), "Naive Bayes (GaussianNB)"),
             (MultinomialNB(), "Naive Bayes (MultinomialNB)"),
@@ -79,3 +80,18 @@ def models_evaluate(X_train, X_test, y_train, y_test, label_encoder):
             (GradientBoostingClassifier(random_state=42), "Gradient Boosting"),
             (XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGB)"),
             (XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGBRF)")]
+    for model, nom_model in models:
+        print(f"\n-----Avaluant model: {nom_model}-----")
+
+        model, train_time = train(model, X_train, y_train) # Entrenament
+        y_pred, test_time = test(model, X_test) # Test
+
+        #Avaluació
+        metrics = evaluate(y_test, y_pred)
+        metrics["train_time"] = train_time
+        metrics["test_time"] = test_time
+
+        resultats[nom_model] = metrics
+        plot_evaluate(metrics, nom_model)
+        print(f"\n-----{nom_model} avaluat!!!-----")
+    return resultats
