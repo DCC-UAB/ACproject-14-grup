@@ -86,7 +86,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     }
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Cross_Gradient_Boosting_best_hyperparametresP2.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer=""):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -115,11 +115,11 @@ def grid_search_xgb(X_train, y_train):
     #DONAT ELS MILLORS PARAMETRES DE LA PROVA 1 SEGUIM FENT CERCA PER VALORS PROEPERS ALS OBTINGUTS 
     
     param_grid = {
-    'learning_rate': [0.05,  0.1, 0.15],
+    'learning_rate': [0.05, 0.075],
     'max_depth': [ 5, 6, 7],
-    'n_estimators': [400, 500, 600],
-    'subsample': [0.75, 0.8, 0.85],
-    'colsample_bytree': [0.75, 0.8, 0.85]
+    'n_estimators': [500, 600],
+    'subsample': [0.8],
+    'colsample_bytree': [0.85]
 }
 
    
@@ -196,20 +196,21 @@ if __name__ == "__main__":
 
         X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=0.2)
         # millor_model = grid_search_xgb(X_train, y_train)
-        millor_model = random_seach_hyperparameters(X_train, y_train)
-        # millor_model = XGBClassifier(
-        #     colsample_bytree=0.85,
-        #     learning_rate=0.15,
-        #     max_depth=7,
-        #     n_estimators=400,
-        #     subsample=0.8,
-        #     tree_method='hist',
-        #     random_state=42
-        # )
+        # millor_model = random_seach_hyperparameters(X_train, y_train)
+
+        millor_model = XGBClassifier(
+            colsample_bytree=0.85,
+            learning_rate=0.075,
+            max_depth=6,
+            n_estimators=600,
+            subsample=0.8,
+            tree_method='hist',
+            random_state=42
+        )
 
         # Avaluar i guardar resultats del model optimitzat
-        # model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized XGBClassifier", resultats, dataset=tipus)
+        model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized XGBClassifier", resultats, dataset=tipus)
 
     # Guarda els resultats al fitxer JSON
-    # guardar_resultats_a_json(resultats)
+    guardar_resultats_a_json(resultats, "resultats_Cross_Gradient_Boosting_best_hyperparametresP5.json")
 

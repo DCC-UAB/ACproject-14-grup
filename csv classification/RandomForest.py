@@ -80,7 +80,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     }
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Random_Forest_best_hyperparametresP1.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="""resultats_Random_Forest_best_hyperparametresP1.json"""):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -152,7 +152,7 @@ def random_search_hyperparameters(X_train, y_train):
     random_search = RandomizedSearchCV(
         estimator=rf,
         param_distributions=param_distributions,
-        n_iter=200,             # Nombre de combinacions aleatòries
+        n_iter=2000,             # Nombre de combinacions aleatòries
         scoring='accuracy',     # Pots canviar la mètrica
         cv=5,                   # Nombre de folds per cross-validation
         verbose=2,              # Mostra informació detallada
@@ -193,11 +193,16 @@ if __name__ == "__main__":
 
         X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=0.2)
 
-        millor_model = grid_search_rf(X_train, y_train)
+        # millor_model = grid_search_rf(X_train, y_train)
+        # millor_model = random_search_hyperparameters(X_train, y_train)
+        millor_model = RandomForestClassifier(
+            bootstrap=False, max_depth=None, max_features='sqrt', min_samples_leaf=1, min_samples_split=2, n_estimators=500
+        )
+
 
         # Avaluar i guardar resultats
-        #model_assess_to_json(random_forest, X_train, X_test, y_train, y_test, "Optimized RF", resultats, dataset=tipus)
+        model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized RF", resultats, dataset=tipus)
 
     # Guarda els resultats al fitxer JSON
-    #guardar_resultats_a_json(resultats)
+    guardar_resultats_a_json(resultats, "resultats_Random_Forest_best_hyperparametresP1.json")
 
