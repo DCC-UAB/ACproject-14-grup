@@ -115,9 +115,9 @@ def grid_search_xgb(X_train, y_train):
     #DONAT ELS MILLORS PARAMETRES DE LA PROVA 1 SEGUIM FENT CERCA PER VALORS PROEPERS ALS OBTINGUTS 
     
     param_grid = {
-    'learning_rate': [0.05, 0.075],
-    'max_depth': [ 5, 6, 7],
-    'n_estimators': [500, 600],
+    'learning_rate': [0.075, 0.05],
+    'max_depth': [5, 4],
+    'n_estimators': [1500],
     'subsample': [0.8],
     'colsample_bytree': [0.85]
 }
@@ -178,7 +178,7 @@ if __name__ == "__main__":
     current_dir = Path(__file__).parent
 
     # Construir el camí als csv
-    cami_csv_3s = current_dir.parent / "csv classification" / "features_3_sec_top20.csv"
+    cami_csv_3s = current_dir.parent / "csv classification" / "features_3_sec_top20_XGBoost.csv"
 
     data3s = pd.read_csv(cami_csv_3s)
 
@@ -195,22 +195,23 @@ if __name__ == "__main__":
         X, y = definirXY_normalitzar(data)
 
         X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=0.2)
-        # millor_model = grid_search_xgb(X_train, y_train)
+        # millor_model = XGBClassifier(n_estimators=1000, learning_rate=0.05)
+        millor_model = grid_search_xgb(X_train, y_train)
         # millor_model = random_seach_hyperparameters(X_train, y_train)
 
-        millor_model = XGBClassifier(
-            colsample_bytree=0.85,
-            learning_rate=0.075,
-            max_depth=6,
-            n_estimators=600,
-            subsample=0.8,
-            tree_method='hist',
-            random_state=42
-        )
+        # millor_model = XGBClassifier(
+        #     colsample_bytree=0.85,
+        #     learning_rate=0.075,
+        #     max_depth=5,
+        #     n_estimators=1500,
+        #     subsample=0.8,
+        #     tree_method='hist',
+        #     random_state=42
+        # )
 
         # Avaluar i guardar resultats del model optimitzat
-        model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized XGBClassifier", resultats, dataset=tipus)
+        # model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized XGBClassifier", resultats, dataset=tipus)
 
     # Guarda els resultats al fitxer JSON
-    guardar_resultats_a_json(resultats, "resultats_Cross_Gradient_Boosting_best_hyperparametresP5.json")
+    # guardar_resultats_a_json(resultats, "resultats_Cross_Gradient_Boosting_best_hyperparametresP6.json")
 

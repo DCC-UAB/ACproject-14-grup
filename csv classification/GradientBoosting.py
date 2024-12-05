@@ -177,7 +177,7 @@ if __name__ == "__main__":
     current_dir = Path(__file__).parent
 
     # Construir el camí als csv
-    cami_csv_3s = current_dir.parent / "csv classification" / "features_3_sec_top20.csv"
+    cami_csv_3s = current_dir.parent / "csv classification" / "features_3_sec_top20_Gradient_Boosting.csv"
 
     data3s = pd.read_csv(cami_csv_3s)
 
@@ -196,14 +196,15 @@ if __name__ == "__main__":
         X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=0.2)
 
         # O prova amb Grid Search
-        millor_model = grid_search_gb(X_train, y_train)
+        # millor_model = grid_search_gb(X_train, y_train)
 
         # Prova amb Randomized Search
         # millor_model = random_search_gb(X_train, y_train)
 
+        millor_model = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=0)
         # Avaluar i guardar resultats
-        # model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized GradientBoostingClassifier", resultats, dataset=tipus)
+        model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized GradientBoostingClassifier", resultats, dataset=tipus)
 
     # Guarda els resultats al fitxer JSON
-    # guardar_resultats_a_json(resultats)
+    guardar_resultats_a_json(resultats, "sssrrss.json")
 
