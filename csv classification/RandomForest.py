@@ -175,7 +175,7 @@ if __name__ == "__main__":
     current_dir = Path(__file__).parent
 
     # Construir el camí als csv
-    cami_csv_3s = current_dir.parent / "csv classification" / "features_3_sec_top20.csv"
+    cami_csv_3s = current_dir.parent / "csv classification" / "features_3_sec_top20_Random_Forest.csv"
 
     data3s = pd.read_csv(cami_csv_3s)
 
@@ -195,14 +195,15 @@ if __name__ == "__main__":
 
         # millor_model = grid_search_rf(X_train, y_train)
         # millor_model = random_search_hyperparameters(X_train, y_train)
-        millor_model = RandomForestClassifier(
-            bootstrap=False, max_depth=None, max_features='sqrt', min_samples_leaf=1, min_samples_split=2, n_estimators=500
-        )
+        # millor_model = RandomForestClassifier(
+        #     bootstrap=False, max_depth=None, max_features='sqrt', min_samples_leaf=1, min_samples_split=2, n_estimators=500
+        # )
 
+        millor_model = RandomForestClassifier(n_estimators=1000, max_depth=10, random_state=0)
 
         # Avaluar i guardar resultats
         model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized RF", resultats, dataset=tipus)
 
     # Guarda els resultats al fitxer JSON
-    guardar_resultats_a_json(resultats, "resultats_Random_Forest_best_hyperparametresP1.json")
+    guardar_resultats_a_json(resultats, "sssss.json")
 
