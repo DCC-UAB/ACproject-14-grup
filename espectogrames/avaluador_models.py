@@ -12,6 +12,8 @@ import time
 from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, log_loss, confusion_matrix)
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 # (enrecordar-se després d'aplicar grid search!!!!) també el predict probabilitat!!!
 
@@ -70,8 +72,8 @@ def models_evaluate(X_train, X_test, y_train, y_test, label_encoder):
     models = [(BernoulliNB(), "Naive Bayes (BernoulliNB)"),
             (GaussianNB(), "Naive Bayes (GaussianNB)"),
             (MultinomialNB(), "Naive Bayes (MultinomialNB)"),
-            (LogisticRegression(max_iter=500, random_state=42), "Logistic Regression"),
-            (KNeighborsClassifier(n_neighbors=5), "K-Nearest Neighbors"),
+            (Pipeline([("scaler", StandardScaler()), ("model", LogisticRegression(max_iter=1000, random_state=42))]), "Logistic Regression"),
+            (Pipeline([("scaler", StandardScaler()), ("model", KNeighborsClassifier(n_neighbors=7))]), "K-Nearest Neighbors"),
             (DecisionTreeClassifier(random_state=42), "Decision Tree"),
             #(SVC(kernel="rbf", probability=True, random_state=42), "Support Vector Machine (SVM)"), va fatal triga la vida
             (RandomForestClassifier(n_estimators=100, random_state=42), "Random Forest"),
