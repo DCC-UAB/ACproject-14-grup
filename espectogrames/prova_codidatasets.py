@@ -1,8 +1,5 @@
 import os
 from pathlib import Path
-
-import librosa
-import librosa.display
 import json
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,6 +8,7 @@ import seaborn as sns
 from IPython.display import display as ipd
 from scipy.io import wavfile as wav
 import time
+import cv2
 
 from sklearn import preprocessing
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
@@ -112,11 +110,9 @@ def guardar_resultats_a_json(resultats, nom_fitxer="resultats_all_models.json"):
 
 
 if __name__ == "__main__":
-
-    current_dir = Path(__file__).parent
-
-    # Construir el camí als csv
-   
+    base_dir = "ACproject-14-grup/datasets/Data1/images_original"
+    resultats = {"train": {}, "test": {}}  
+    tipus = "espectograma"  
 
     # Llista de models a avaluar:
     models = [
@@ -132,12 +128,22 @@ if __name__ == "__main__":
         (XGBRFClassifier(objective= 'multi:softmax'),"Cross Gradient Booster (Random Forest)" )
 
     ]
+    
+    data, labels = [], []
+    for genre in os.listdir(base_dir):
+        genre_path = os.path.join(base_dir, genre)
+        if os.path.isdir(genre_path):
+            for img_file in os.listdir(genre_path):
+                img_path = os.path.join(genre_path, img_file)
+                img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+                if img is not None:
+                    img_resized = cv2.resize(img, (128, 128)).flatten() / 255.0
+                    data.append(img_resized)
+                    labels.append(genre)
 
-    resultats = {"3 seconds": {}, "30 seconds": {}}
+        data = pd.DataFrame(data)
+        data["label"] = labels
 
-    # Avaluació de cada dataset
-    for data, tipus in [(data3s, "3 seconds"), (data30s, "30 seconds")]:  # Diferents datasets
-        print(f"\n### Avaluant {tipus} data ###")
         data = codificar_label(data)
         X, y = definirXY_normalitzar(data)
 
