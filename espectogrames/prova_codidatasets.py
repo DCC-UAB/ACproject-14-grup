@@ -86,7 +86,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
 
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_all_models.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats2.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         (GaussianNB(), "Gaussian Naive Bayes"),
         (BernoulliNB(), "Bernoulli Naive Bayes"),
         (MultinomialNB(), "Multinomial Naive Bayes"),
-        (SVC(decision_function_shape="ovo"), "Support Vector Machine"),
+        #(SVC(decision_function_shape="ovo"), "Support Vector Machine"),
         (KNeighborsClassifier(n_neighbors=19), "K-Nearest Neighbors"),
         (DecisionTreeClassifier(), "Decision Trees"),
         (RandomForestClassifier(n_estimators=1000, max_depth=10, random_state=0), "Random Forest"),
