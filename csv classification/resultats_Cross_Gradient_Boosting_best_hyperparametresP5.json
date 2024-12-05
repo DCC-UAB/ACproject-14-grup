@@ -1,0 +1,13 @@
+{
+    "3 seconds": {
+        "Optimized XGBClassifier": {
+            "accuracy": 0.9034,
+            "precision": 0.9037,
+            "recall": 0.9034,
+            "f1_score": 0.9033,
+            "roc_auc": 0.99408,
+            "accuracy_gap": 0.09585,
+            "f1_gap": 0.09595
+        }
+    }
+}
