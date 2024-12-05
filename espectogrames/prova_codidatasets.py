@@ -26,7 +26,7 @@ from xgboost import XGBClassifier, XGBRFClassifier
 def codificar_label(data):
     label_encoder = preprocessing.LabelEncoder()
     data['label'] = label_encoder.fit_transform(data['label'])
-    return data
+    return data, label_encoder
 
 def definirXY_normalitzar(data):
     X = data.drop(['label'],axis=1)
@@ -37,20 +37,19 @@ def definirXY_normalitzar(data):
     X = pd.DataFrame(np_scaled, columns=columnes)#nou dataset sense label i filename
     return X, y
 
-
 def model_assess(model, X_train, X_test, y_train, y_test, title = "Default"):
     model.fit(X_train, y_train)
     preds = model.predict(X_test)
     #print(confusion_matrix(y_test, preds))
     print('Accuracy', title, ':', round(accuracy_score(y_test, preds), 5), '\n') #calcular accuracy
 
-def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats, dataset):
+def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats):
     """
     Avaluar un model amb diverses mètriques i guardar els resultats en un diccionari.
     """
-    if dataset not in resultats:
-        resultats[dataset] = {}
-    
+    if title not in resultats:
+        resultats[title] = {}
+
     model.fit(X_train, y_train)
     preds = model.predict(X_test)
 
@@ -74,27 +73,16 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     accuracy_gap = round(accuracy_train - accuracy_test, 5)
     f1_gap = round(f1_train - f1_test, 5)
 
-    # Assegurar que existeix la clau del model
-    if title not in resultats[dataset]:
-        resultats[dataset][title] = {
-            "accuracy": 0,
-            "precision": 0,
-            "recall": 0,
-            "f1_score": 0,
-            "roc_auc": 0,
-            "accuracy_gap": 0,
-            "f1_gap": 0,
-        }
 
     # Afegir mètriques al diccionari
-    resultats[dataset][title]["accuracy"]=accuracy_test
-    resultats[dataset][title]["precision"]=precision_test
-    resultats[dataset][title]["recall"]=recall_test
-    resultats[dataset][title]["f1_score"]=f1_test
+    resultats[title]["accuracy"]=accuracy_test
+    resultats[title]["precision"]=precision_test
+    resultats[title]["recall"]=recall_test
+    resultats[title]["f1_score"]=f1_test
     if roc_auc_test is not None:
-        resultats[dataset][title]["roc_auc"]=roc_auc_test
-    resultats[dataset][title]["accuracy_gap"]=accuracy_gap
-    resultats[dataset][title]["f1_gap"]=f1_gap
+        resultats[title]["roc_auc"]=roc_auc_test
+    resultats[title]["accuracy_gap"]=accuracy_gap
+    resultats[title]["f1_gap"]=f1_gap
 
 
 
@@ -107,13 +95,12 @@ def guardar_resultats_a_json(resultats, nom_fitxer="resultats_all_models.json"):
 
     with open(nom_fitxer, "w") as fitxer:
         json.dump(resultats, fitxer, indent=4)
-    print(f"Resultats guardats a {nom_fitxer}")
+    print(f"Resultats guardats a {fitxer_json}")
 
 
 if __name__ == "__main__":
     base_dir = "ACproject-14-grup/datasets/Data1/images_original"
-    resultats = {}  
-    tipus = "espectograma"  
+    resultats = {}    
 
     # Llista de models a avaluar:
     models = [
@@ -150,10 +137,10 @@ if __name__ == "__main__":
     print("Distribució de classes inicial:")
     print(Counter(labels))
 
-    data = codificar_label(data)
+    data, label_encoder = codificar_label(data)
     X, y = definirXY_normalitzar(data)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=labels)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
 
     # validació distribució
     print("Distribució de classes a y_train:")
@@ -163,7 +150,7 @@ if __name__ == "__main__":
 
     for model, title in models:
         print(f"\nModel: {title}")
-        model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats, dataset=tipus)
+        model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats)
 
 
     # Guarda els resultats al fitxer JSON
