@@ -9,6 +9,7 @@ from IPython.display import display as ipd
 from scipy.io import wavfile as wav
 import time
 import cv2
+from sklearn.model_selection import train_test_split
 
 from sklearn import preprocessing
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
@@ -28,20 +29,13 @@ def codificar_label(data):
     return data
 
 def definirXY_normalitzar(data):
-    X = data.drop(['label','filename'],axis=1) #treiem label(vaalor a predir) i filename (redundant)
+    X = data.drop(['label'],axis=1)
     y = data['label'] #variable independent (a predir)
     columnes = X.columns
     min_max_scaler = MinMaxScaler()
     np_scaled = min_max_scaler.fit_transform(X) #escalem 
     X = pd.DataFrame(np_scaled, columns=columnes)#nou dataset sense label i filename
     return X, y
-
- 
-def divisio_dades(X, y, test_size=0.2):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=111)
-    print(f"Train shape: {X_train.shape}, Test shape: {X_test.shape} (test_size={test_size})") #mostrem dimensions
-    return X_train, X_test, y_train, y_test
-
 
 
 def model_assess(model, X_train, X_test, y_train, y_test, title = "Default"):
@@ -54,6 +48,9 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     """
     Avaluar un model amb diverses mètriques i guardar els resultats en un diccionari.
     """
+    if dataset not in resultats:
+        resultats[dataset] = {}
+    
     model.fit(X_train, y_train)
     preds = model.predict(X_test)
 
@@ -62,8 +59,12 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     precision_test = round(precision_score(y_test, preds, average="weighted", zero_division=0), 5)
     recall_test = round(recall_score(y_test, preds, average="weighted", zero_division=0), 5)
     f1_test = round(f1_score(y_test, preds, average="weighted", zero_division=0), 5)
-    roc_auc_test = round(roc_auc_score(y_test, model.predict_proba(X_test), multi_class="ovr"), 5) if hasattr(model, "predict_proba") else None
-
+    
+    if len(np.unique(y_test)) > 1 and hasattr(model, "predict_proba"):
+        roc_auc_test = round(roc_auc_score(y_test, model.predict_proba(X_test), multi_class="ovr"), 5)
+    else:
+        roc_auc_test = None
+    
     # Calcular mètriques per al train
     preds_train = model.predict(X_train)
     accuracy_train = round(accuracy_score(y_train, preds_train), 5)
@@ -111,7 +112,7 @@ def guardar_resultats_a_json(resultats, nom_fitxer="resultats_all_models.json"):
 
 if __name__ == "__main__":
     base_dir = "ACproject-14-grup/datasets/Data1/images_original"
-    resultats = {"train": {}, "test": {}}  
+    resultats = {}  
     tipus = "espectograma"  
 
     # Llista de models a avaluar:
@@ -130,6 +131,7 @@ if __name__ == "__main__":
     ]
     
     data, labels = [], []
+
     for genre in os.listdir(base_dir):
         genre_path = os.path.join(base_dir, genre)
         if os.path.isdir(genre_path):
@@ -141,17 +143,27 @@ if __name__ == "__main__":
                     data.append(img_resized)
                     labels.append(genre)
 
-        data = pd.DataFrame(data)
-        data["label"] = labels
+    data = pd.DataFrame(data)
+    data["label"] = labels
 
-        data = codificar_label(data)
-        X, y = definirXY_normalitzar(data)
+    from collections import Counter
+    print("Distribució de classes inicial:")
+    print(Counter(labels))
 
-        X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=0.2)
+    data = codificar_label(data)
+    X, y = definirXY_normalitzar(data)
 
-        for model, title in models:
-            print(f"\nModel: {title}")
-            model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats, dataset=tipus)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=labels)
+
+    # validació distribució
+    print("Distribució de classes a y_train:")
+    print(Counter(y_train))
+    print("Distribució de classes a y_test:")
+    print(Counter(y_test))
+
+    for model, title in models:
+        print(f"\nModel: {title}")
+        model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats, dataset=tipus)
 
 
     # Guarda els resultats al fitxer JSON
