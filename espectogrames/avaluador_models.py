@@ -73,9 +73,9 @@ def models_evaluate(X_train, X_test, y_train, y_test, label_encoder):
             (LogisticRegression(max_iter=500, random_state=42), "Logistic Regression"),
             (KNeighborsClassifier(n_neighbors=5), "K-Nearest Neighbors"),
             (DecisionTreeClassifier(random_state=42), "Decision Tree"),
-            (SVC(kernel="rbf", probability=False, random_state=42), "Support Vector Machine (SVM)"),
+            #(SVC(kernel="rbf", probability=True, random_state=42), "Support Vector Machine (SVM)"), va fatal triga la vida
             (RandomForestClassifier(n_estimators=100, random_state=42), "Random Forest"),
-            (GradientBoostingClassifier(random_state=42), "Gradient Boosting"),
+            #(GradientBoostingClassifier(random_state=42), "Gradient Boosting"),
             (XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGB)"),
             (XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGBRF)")]
    
@@ -117,4 +117,7 @@ for model_name, metrics in resultats.items():
         print(f"  Accuracy: {metrics['accuracy']:.2f}")
         print(f"  Training Time: {metrics['train_time']:.2f} seconds")
         print(f"  Prediction Time: {metrics['test_time']:.2f} seconds")
+
+
+
 
