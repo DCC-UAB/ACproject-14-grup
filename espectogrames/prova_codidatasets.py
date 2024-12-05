@@ -111,8 +111,8 @@ if __name__ == "__main__":
         (KNeighborsClassifier(n_neighbors=19), "K-Nearest Neighbors"),
         (DecisionTreeClassifier(), "Decision Trees"),
         (RandomForestClassifier(n_estimators=1000, max_depth=10, random_state=0), "Random Forest"),
-        (GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=0), "Gradient Boosting"),
-        (XGBClassifier(n_estimators=1000, learning_rate=0.05), "Cross Gradient Booster"),
+        #º(GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=0), "Gradient Boosting"),
+        #(XGBClassifier(n_estimators=1000, learning_rate=0.05), "Cross Gradient Booster"),
         (XGBRFClassifier(objective= 'multi:softmax'),"Cross Gradient Booster (Random Forest)" )
 
     ]
