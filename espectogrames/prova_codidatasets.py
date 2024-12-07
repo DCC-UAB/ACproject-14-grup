@@ -23,6 +23,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier, XGBRFClassifier
 
+"""
 def divisio_en_vectors(data, labels, img_size=(128,128), block_size=(4,4)):
     for genre in os.listdir(base_dir):
         genre_path = os.path.join(base_dir, genre)
@@ -45,6 +46,31 @@ def divisio_en_vectors(data, labels, img_size=(128,128), block_size=(4,4)):
                             features.append(np.min(block))
 
                     data.append(features)
+                    labels.append(genre)
+
+"""
+
+def extraccio_caracteristiques(data, labels, img_size=(128, 128), num_bands=10):
+    for genre in os.listdir(base_dir):
+        genre_path = os.path.join(base_dir, genre)
+        if os.path.isdir(genre_path):
+            for img_file in os.listdir(genre_path):
+                img_path = os.path.join(genre_path, img_file)
+                img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+                if img is not None:
+                    img_resized = cv2.resize(img, img_size) / 255.0
+                    h, w = img_resized.shape
+                    band_size = h // num_bands
+                    features = []
+
+                    for i in range(0, h, band_size):
+                        band = img_resized[i:i + band_size, :]
+                        features.append(np.mean(band))
+                        features.append(np.std(band))
+                        features.append(np.max(band))
+                        features.append(np.min(band))
+                    
+                    data.append(features)  
                     labels.append(genre)
 
 def codificar_label(data):
@@ -109,8 +135,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["f1_gap"]=f1_gap
 
 
-
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_divisioVectors.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_extraccioCaracteristiques.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -143,7 +168,8 @@ if __name__ == "__main__":
     
     data, labels = [], []
 
-    divisio_en_vectors(data, labels, img_size=(128,128), block_size=(4,4))
+    #divisio_en_vectors(data, labels, img_size=(128,128), block_size=(4,4))
+    extraccio_caracteristiques(data, labels, img_size=(128, 128), num_bands=10)
 
     data = pd.DataFrame(data)
     data["label"] = labels
