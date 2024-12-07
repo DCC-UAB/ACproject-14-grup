@@ -15,6 +15,7 @@ MODELS DESCARTATS:
 - SVC triga més de 30min
 - gradient boosting triga més de 30min
 - Cross Gradient booster (XGB), triga més de 30min
+- XGBR 
 
 TOP 3:
 - 
