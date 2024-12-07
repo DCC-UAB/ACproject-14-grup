@@ -31,7 +31,7 @@ def augment_image(image):
     darker = np.clip(image * 0.8, 0, 1)
     return [image, flipped, noisy, brighter, darker]
 
-def divisio_en_vectors_augmentat(data, labels, img_size=(128,128), block_size=(4,4)):
+def divisio_en_vectors_augmentat(data, labels, img_size=(128,128)):
     for genre in os.listdir(base_dir):
         genre_path = os.path.join(base_dir, genre)
         if os.path.isdir(genre_path):
@@ -134,7 +134,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["temps_predict"]=predict_time
     resultats[title]["temps_total"]=total_time
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_totselsModels.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_totselsModels_PCA.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -183,7 +183,7 @@ if __name__ == "__main__":
     pca = PCA(n_components=100)
     X_reduced = pca.fit_transform(X)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X_reduced, y, test_size=0.2, random_state=111, stratify=y)
 
     # validació distribució
     print("Distribució de classes a y_train:")
