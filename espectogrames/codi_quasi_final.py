@@ -153,7 +153,7 @@ if __name__ == "__main__":
     
     data, labels = [], []
 
-    divisio_en_vectors_augmentat(data, labels, img_size=(128,128), block_size=(4,4))
+    processament(data, labels, img_size=(128,128))
     
     data = pd.DataFrame(data)
     data["label"] = labels
