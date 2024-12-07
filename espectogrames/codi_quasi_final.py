@@ -31,7 +31,7 @@ def augment_image(image):
     darker = np.clip(image * 0.8, 0, 1)
     return [image, flipped, noisy, brighter, darker]
 
-def divisio_en_vectors_augmentat(data, labels, img_size=(128,128)):
+def processament(data, labels, img_size=(128,128)):
     for genre in os.listdir(base_dir):
         genre_path = os.path.join(base_dir, genre)
         if os.path.isdir(genre_path):
@@ -43,23 +43,8 @@ def divisio_en_vectors_augmentat(data, labels, img_size=(128,128)):
                     augmented_images = augment_image(img_resized)
                     
                     for aug_img in augmented_images:
-                        """
-                        features = []
-
-                        h, w = aug_img.shape
-                        block_h, block_w = block_size
-                        for i in range(0, h, block_h):
-                            for j in range(0, w, block_w):
-                                block = aug_img[i:i + block_h, j:j + block_w]
-                                features.append(np.mean(block))
-                                features.append(np.std(block))
-                                features.append(np.max(block))
-                                features.append(np.min(block))
-                        """
                         data.append(aug_img.flatten())
                         labels.append(genre)
-
-
 
 def codificar_label(data):
     label_encoder = preprocessing.LabelEncoder()
