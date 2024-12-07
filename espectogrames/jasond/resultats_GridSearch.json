@@ -1,0 +1,14 @@
+{
+    "Random Forest (GS)": {
+        "accuracy": 0.89389,
+        "precision": 0.89761,
+        "recall": 0.89389,
+        "f1_score": 0.89417,
+        "roc_auc": 0.98632,
+        "accuracy_gap": 0.10561,
+        "f1_gap": 0.10533,
+        "temps_train": 163.35696,
+        "temps_predict": 0.29769,
+        "temps_total": 163.65465
+    }
+}
