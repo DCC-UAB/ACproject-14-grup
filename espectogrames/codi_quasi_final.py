@@ -40,8 +40,7 @@ def divisio_en_vectors_augmentat(data, labels, img_size=(128,128), block_size=(4
                 img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                 if img is not None:
                     img_resized = cv2.resize(img, img_size) / 255.0
-                    img_escalaLog = np.log1p(img_resized)
-                    augmented_images = augment_image(img_escalaLog)
+                    augmented_images = augment_image(img_resized)
 
                     for aug_img in augmented_images:
                         features = []
