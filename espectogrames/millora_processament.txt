@@ -6,3 +6,5 @@ accuracy max original: 0.5
 4: augmentar dades: accuracy max = 0.73
 5: reduir dimensionalitat:  depen quin model empitjora/millora
 6: fer escala de grisos logaritmica
+
+Finalment aplicar grid search i cross validation
