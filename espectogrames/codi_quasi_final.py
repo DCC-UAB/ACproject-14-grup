@@ -88,8 +88,17 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     if title not in resultats:
         resultats[title] = {}
 
+    start_total = time.time()
+
+    start_train = time.time()
     model.fit(X_train, y_train)
+    train_time = round(time.time() - start_train, 5)
+
+    start_predict = time.time()
     preds = model.predict(X_test)
+    predict_time = round(time.time() - start_predict, 5)
+
+    total_time = round(time.time() - start_total, 5)
 
     # Calcular mètriques per al test
     accuracy_test = round(accuracy_score(y_test, preds), 5)
@@ -121,7 +130,9 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
         resultats[title]["roc_auc"]=roc_auc_test
     resultats[title]["accuracy_gap"]=accuracy_gap
     resultats[title]["f1_gap"]=f1_gap
-
+    resultats[title]["temps_train"]=train_time
+    resultats[title]["temps_predict"]=predict_time
+    resultats[title]["temps_total"]=total_time
 
 def guardar_resultats_a_json(resultats, nom_fitxer="resultats_totselsModels.json"):
     """
