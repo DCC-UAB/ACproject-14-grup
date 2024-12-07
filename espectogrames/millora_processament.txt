@@ -1,8 +1,8 @@
 
 accuracy max original: 0.5
 1: dividir espectograma en vectors : accuracy max=0.56
-2: normalitzar de forma diferent: depen quin model empitjora/millora
+2: normalitzar de forma diferent
 3: extreure caracteristiques de frequencia: accuracy max = 0.48
 4: augmentar dades: accuracy max = 0.73
-5: reduir dimensionalitat
+5: reduir dimensionalitat:  depen quin model empitjora/millora
 6: fer escala de grisos logaritmica
