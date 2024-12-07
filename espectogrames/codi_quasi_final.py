@@ -141,7 +141,6 @@ if __name__ == "__main__":
         (GaussianNB(), "Gaussian Naive Bayes"),
         (BernoulliNB(), "Bernoulli Naive Bayes"),
         (MultinomialNB(), "Multinomial Naive Bayes"),
-        (SVC(kernel="rbf", probability=True, C=10, gamma="scale", random_state=40), "Support Vector Machine"),
         (KNeighborsClassifier(n_neighbors=11, weights="distance", metric="minkowski", p=2), "K-Nearest Neighbors"),
         (DecisionTreeClassifier(max_depth=15, criterion="gini", random_state=40), "Decision Trees"),
         (RandomForestClassifier(n_estimators=500, max_depth=20, max_features="sqrt",random_state=40), "Random Forest"),
