@@ -41,8 +41,9 @@ def divisio_en_vectors_augmentat(data, labels, img_size=(128,128), block_size=(4
                 if img is not None:
                     img_resized = cv2.resize(img, img_size) / 255.0
                     augmented_images = augment_image(img_resized)
-
+                    
                     for aug_img in augmented_images:
+                        """
                         features = []
 
                         h, w = aug_img.shape
@@ -54,8 +55,8 @@ def divisio_en_vectors_augmentat(data, labels, img_size=(128,128), block_size=(4
                                 features.append(np.std(block))
                                 features.append(np.max(block))
                                 features.append(np.min(block))
-
-                        data.append(features)
+                        """
+                        data.append(aug_img.flatten())
                         labels.append(genre)
 
 
@@ -122,7 +123,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["f1_gap"]=f1_gap
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_logEscalat.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_comprovacio.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
