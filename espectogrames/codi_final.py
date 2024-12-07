@@ -11,6 +11,7 @@ from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from sklearn import preprocessing
+from sklearn.model_selection import StratifiedKFold
 
 
 def augment_image(image):
@@ -48,6 +49,12 @@ def definirXY_normalitzar(data):
     np_scaled = min_max_scaler.fit_transform(X) #escalem 
     X = pd.DataFrame(np_scaled, columns=columnes)#nou dataset sense label i filename
     return X, y
+
+def cross_validation(model, X, y):
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    scores = cross_val_score(model, X, y, cv=skf, scoring="accuracy")
+    print(f"Accuracy mitjà amb cross-validation: {np.mean(scores):.4f}")
+    return scores
 
 
 def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats):
@@ -103,7 +110,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["temps_predict"]=predict_time
     resultats[title]["temps_total"]=total_time
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_GridSearch.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_CrossValidation.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -139,7 +146,11 @@ if __name__ == "__main__":
 
     best_rf_model =  RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1)
 
-    model_assess_to_json(best_rf_model, X_train, X_test, y_train, y_test, "Random Forest (GS)", resultats)
+    model_assess_to_json(best_rf_model, X_train, X_test, y_train, y_test, "Random Forest (GS+CV)", resultats)
+
+    cv_scores = cross_validation(best_rf_model, X, y)
+    resultats["Random Forest (GS+CV)"]["cross_val_scores"] = cv_scores.tolist()
+    resultats["Random Forest (GS+CV)"]["cross_val_mean"] = np.mean(cv_scores)
 
     # Guarda els resultats al fitxer JSON
     guardar_resultats_a_json(resultats)
