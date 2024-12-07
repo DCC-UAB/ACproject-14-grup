@@ -123,7 +123,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["f1_gap"]=f1_gap
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_comprovacio.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_totselsModels.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -145,13 +145,13 @@ if __name__ == "__main__":
         (GaussianNB(), "Gaussian Naive Bayes"),
         (BernoulliNB(), "Bernoulli Naive Bayes"),
         (MultinomialNB(), "Multinomial Naive Bayes"),
-        #(SVC(decision_function_shape="ovo"), "Support Vector Machine"),
-        (KNeighborsClassifier(n_neighbors=19), "K-Nearest Neighbors"),
-        (DecisionTreeClassifier(), "Decision Trees"),
-        (RandomForestClassifier(n_estimators=500, max_depth=10, random_state=0), "Random Forest"),
-        #º(GradientBoostingClassifier(n_estimators=200, learning_rate=0.05, max_depth=3, random_state=23), "Gradient Boosting"),
-        #(XGBClassifier(n_estimators=1000, learning_rate=0.05), "Cross Gradient Booster"),
-        (XGBRFClassifier(objective= 'multi:softmax'),"Cross Gradient Booster (Random Forest)" )
+        (SVC(kernel="rbf", probability=True, C=10, gamma="scale", random_state=40), "Support Vector Machine"),
+        (KNeighborsClassifier(n_neighbors=11, weights="distance", metric="minkowski", p=2), "K-Nearest Neighbors"),
+        (DecisionTreeClassifier(max_depth=15, criterion="gini", random_state=40), "Decision Trees"),
+        (RandomForestClassifier(n_estimators=500, max_depth=20, max_features="sqrt",random_state=40), "Random Forest"),
+        (GradientBoostingClassifier(n_estimators=300, learning_rate=0.05, max_depth=4, random_state=40), "Gradient Boosting"),
+        (XGBClassifier(n_estimators=300, learning_rate=0.05, max_depth=6, objective="multi:softmax", random_state=40), "Cross Gradient Booster"),
+        (XGBRFClassifier(n_estimators=300, max_depth=6, subsample=0.8, colsample_bytree=0.8, random_state=40),"Cross Gradient Booster (Random Forest)" )
 
     ]
     

@@ -7,6 +7,6 @@ accuracy max original: 0.5
 5: reduir dimensionalitat:  depen quin model empitjora/millora
 6: fer escala de grisos logaritmica: empitjora poquet, pero es pitjor
 
-Guanyador-> augment de dades + divisió espectograma en vectors
+Guanyador-> augment de dades sol max accuracy: 0.86
 
 Finalment aplicar grid search i cross validation
