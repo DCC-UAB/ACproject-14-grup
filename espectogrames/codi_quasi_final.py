@@ -144,7 +144,6 @@ if __name__ == "__main__":
         (KNeighborsClassifier(n_neighbors=11, weights="distance", metric="minkowski", p=2), "K-Nearest Neighbors"),
         (DecisionTreeClassifier(max_depth=15, criterion="gini", random_state=40), "Decision Trees"),
         (RandomForestClassifier(n_estimators=500, max_depth=20, max_features="sqrt",random_state=40), "Random Forest"),
-        (XGBClassifier(n_estimators=300, learning_rate=0.05, max_depth=6, objective="multi:softmax", random_state=40), "Cross Gradient Booster"),
         (XGBRFClassifier(n_estimators=300, max_depth=6, subsample=0.8, colsample_bytree=0.8, random_state=40),"Cross Gradient Booster (Random Forest)" )
 
     ]

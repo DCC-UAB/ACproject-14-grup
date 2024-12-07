@@ -14,4 +14,10 @@ Finalment aplicar grid search i cross validation i pca
 MODELS DESCARTATS:
 - SVC triga més de 30min
 - gradient boosting triga més de 30min
+- Cross Gradient booster (XGB), triga més de 30min
+
+TOP 3:
+- 
+- 
+- 
 
