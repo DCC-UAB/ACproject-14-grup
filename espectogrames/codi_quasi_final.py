@@ -119,7 +119,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["temps_predict"]=predict_time
     resultats[title]["temps_total"]=total_time
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_totselsModels_PCA.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_totselsModels.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -165,10 +165,12 @@ if __name__ == "__main__":
     data, label_encoder = codificar_label(data)
     X, y = definirXY_normalitzar(data)
 
+    """
     pca = PCA(n_components=100)
     X_reduced = pca.fit_transform(X)
+    """
 
-    X_train, X_test, y_train, y_test = train_test_split(X_reduced, y, test_size=0.2, random_state=111, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
 
     # validació distribució
     print("Distribució de classes a y_train:")

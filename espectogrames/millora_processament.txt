@@ -9,4 +9,4 @@ accuracy max original: 0.5
 
 Guanyador-> augment de dades sol max accuracy: 0.86
 
-Finalment aplicar grid search i cross validation
+Finalment aplicar grid search i cross validation i pca
