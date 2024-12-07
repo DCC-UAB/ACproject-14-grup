@@ -143,12 +143,13 @@ if __name__ == "__main__":
     """
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
-
+    print('esta pasant algo')
     best_rf_model =  RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1)
-
+    print('randomcalculat')
     model_assess_to_json(best_rf_model, X_train, X_test, y_train, y_test, "Random Forest (GS+CV)", resultats)
 
     cv_scores = cross_validation(best_rf_model, X, y)
+    print('esta pasant algo2')
     resultats["Random Forest (GS+CV)"]["cross_val_scores"] = cv_scores.tolist()
     resultats["Random Forest (GS+CV)"]["cross_val_mean"] = np.mean(cv_scores)
 
