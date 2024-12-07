@@ -10,6 +10,7 @@ from scipy.io import wavfile as wav
 import time
 import cv2
 from sklearn.model_selection import train_test_split
+from sklearn.decomposition import PCA
 
 from sklearn import preprocessing
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
@@ -121,7 +122,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["f1_gap"]=f1_gap
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_augmentImatges.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_reduccioDim.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -165,6 +166,9 @@ if __name__ == "__main__":
 
     data, label_encoder = codificar_label(data)
     X, y = definirXY_normalitzar(data)
+
+    pca = PCA(n_components=100)
+    X_reduced = pca.fit_transform(X)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
 
