@@ -121,7 +121,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["f1_gap"]=f1_gap
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats3.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_augmentImatges.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
