@@ -143,6 +143,8 @@ if __name__ == "__main__":
     
     data, labels = [], []
 
+    divisio_en_vectors(data, labels, img_size=(128,128), block_size=(4,4))
+
     data = pd.DataFrame(data)
     data["label"] = labels
 
