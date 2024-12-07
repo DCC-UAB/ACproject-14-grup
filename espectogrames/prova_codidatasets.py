@@ -23,6 +23,30 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier, XGBRFClassifier
 
+def divisio_en_vectors(data, labels, img_size=(128,128), block_size=(4,4)):
+    for genre in os.listdir(base_dir):
+        genre_path = os.path.join(base_dir, genre)
+        if os.path.isdir(genre_path):
+            for img_file in os.listdir(genre_path):
+                img_path = os.path.join(genre_path, img_file)
+                img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+                if img is not None:
+                    img_resized = cv2.resize(img, img_size)/ 255.0
+                    features = []
+
+                    h, w = img_resized.shape
+                    block_h, block_w = block_size
+                    for i in range(0, h, block_h):
+                        for j in range(0, w, block_w):
+                            block = img_resized[i:i + block_h, j:j + block_w]
+                            features.append(np.mean(block))
+                            features.append(np.std(block))
+                            features.append(np.max(block))
+                            features.append(np.min(block))
+
+                    data.append(features)
+                    labels.append(genre)
+
 def codificar_label(data):
     label_encoder = preprocessing.LabelEncoder()
     data['label'] = label_encoder.fit_transform(data['label'])
@@ -118,17 +142,6 @@ if __name__ == "__main__":
     ]
     
     data, labels = [], []
-
-    for genre in os.listdir(base_dir):
-        genre_path = os.path.join(base_dir, genre)
-        if os.path.isdir(genre_path):
-            for img_file in os.listdir(genre_path):
-                img_path = os.path.join(genre_path, img_file)
-                img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-                if img is not None:
-                    img_resized = cv2.resize(img, (128, 128)).flatten() / 255.0
-                    data.append(img_resized)
-                    labels.append(genre)
 
     data = pd.DataFrame(data)
     data["label"] = labels
