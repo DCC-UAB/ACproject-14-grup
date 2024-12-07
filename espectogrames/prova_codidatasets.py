@@ -23,7 +23,13 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier, XGBRFClassifier
 
-"""
+def augment_image(image):
+    flipped = np.fliplr(image)
+    noisy = np.clip(image + np.random.normal(0, 0.02, image.shape), 0, 1)  
+    brighter = np.clip(image * 1.2, 0, 1)
+    darker = np.clip(image * 0.8, 0, 1)
+    return [image, flipped, noisy, brighter, darker]
+
 def divisio_en_vectors(data, labels, img_size=(128,128), block_size=(4,4)):
     for genre in os.listdir(base_dir):
         genre_path = os.path.join(base_dir, genre)
@@ -48,7 +54,7 @@ def divisio_en_vectors(data, labels, img_size=(128,128), block_size=(4,4)):
                     data.append(features)
                     labels.append(genre)
 
-"""
+
 
 def codificar_label(data):
     label_encoder = preprocessing.LabelEncoder()
@@ -112,7 +118,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["f1_gap"]=f1_gap
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_extraccioCaracteristiques.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats3.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -136,7 +142,7 @@ if __name__ == "__main__":
         #(SVC(decision_function_shape="ovo"), "Support Vector Machine"),
         (KNeighborsClassifier(n_neighbors=19), "K-Nearest Neighbors"),
         (DecisionTreeClassifier(), "Decision Trees"),
-        (RandomForestClassifier(n_estimators=1000, max_depth=10, random_state=0), "Random Forest"),
+        (RandomForestClassifier(n_estimators=500, max_depth=10, random_state=0), "Random Forest"),
         #º(GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=0), "Gradient Boosting"),
         #(XGBClassifier(n_estimators=1000, learning_rate=0.05), "Cross Gradient Booster"),
         (XGBRFClassifier(objective= 'multi:softmax'),"Cross Gradient Booster (Random Forest)" )
@@ -145,7 +151,7 @@ if __name__ == "__main__":
     
     data, labels = [], []
 
-    #divisio_en_vectors(data, labels, img_size=(128,128), block_size=(4,4))
+    divisio_en_vectors(data, labels, img_size=(128,128), block_size=(4,4))
     
     data = pd.DataFrame(data)
     data["label"] = labels
