@@ -39,8 +39,9 @@ def divisio_en_vectors_augmentat(data, labels, img_size=(128,128), block_size=(4
                 img_path = os.path.join(genre_path, img_file)
                 img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                 if img is not None:
-                    img_resized = cv2.resize(img, img_size)/ 255.0
-                    augmented_images = augment_image(img_resized)
+                    img_resized = cv2.resize(img, img_size)
+                    img_normalitzada = (img_resized - np.mean(img_resized)) / (np.std(img_resized) + 1e-8)
+                    augmented_images = augment_image(img_normalitzada)
 
                     for aug_img in augmented_images:
                         features = []
