@@ -123,11 +123,12 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["f1_gap"]=f1_gap
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_reduccioDim.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_imatgeNormalitzada.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
-    current_dir = Path(__file__).parent.resolve()  # Directori actual del script
+    current_dir = Path(r"C:/Users/carlo/Desktop/uni/AC/Projecte AC/ACproject-14-grup/espectogrames/jasond")
+    
     fitxer_json = current_dir / nom_fitxer  # Camí complet al fitxer JSON
 
     with open(nom_fitxer, "w") as fitxer:
