@@ -1,0 +1,13 @@
+{
+    "3 seconds": {
+        "Optimized GradientBoostingClassifier": {
+            "accuracy": 0.8959,
+            "precision": 0.8963,
+            "recall": 0.8959,
+            "f1_score": 0.89577,
+            "roc_auc": 0.99254,
+            "accuracy_gap": 0.10335,
+            "f1_gap": 0.10348
+        }
+    }
+}
