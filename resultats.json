@@ -1,0 +1,146 @@
+{
+    "3 seconds": {
+        "Gaussian Naive Bayes": {
+            "accuracy": 0.47698,
+            "precision": 0.49279,
+            "recall": 0.47698,
+            "f1_score": 0.44381,
+            "roc_auc": 0.88037
+        },
+        "Bernoulli Naive Bayes": {
+            "accuracy": 0.09109,
+            "precision": 0.0083,
+            "recall": 0.09109,
+            "f1_score": 0.01521,
+            "roc_auc": 0.49849
+        },
+        "Multinomial Naive Bayes": {
+            "accuracy": 0.46396,
+            "precision": 0.46424,
+            "recall": 0.46396,
+            "f1_score": 0.44519,
+            "roc_auc": 0.85041
+        },
+        "Support Vector Machine": {
+            "accuracy": 0.68519,
+            "precision": 0.68262,
+            "recall": 0.68519,
+            "f1_score": 0.68287,
+            "roc_auc": 0
+        },
+        "K-Nearest Neighbors": {
+            "accuracy": 0.76877,
+            "precision": 0.77484,
+            "recall": 0.76877,
+            "f1_score": 0.76932,
+            "roc_auc": 0.97472
+        },
+        "Decision Trees": {
+            "accuracy": 0.66216,
+            "precision": 0.66233,
+            "recall": 0.66216,
+            "f1_score": 0.66192,
+            "roc_auc": 0.81237
+        },
+        "Random Forest": {
+            "accuracy": 0.8018,
+            "precision": 0.80188,
+            "recall": 0.8018,
+            "f1_score": 0.80041,
+            "roc_auc": 0.97983
+        },
+        "Gradient Boosting": {
+            "accuracy": 0.8008,
+            "precision": 0.8009,
+            "recall": 0.8008,
+            "f1_score": 0.80048,
+            "roc_auc": 0.97965
+        },
+        "Cross Gradient Booster": {
+            "accuracy": 0.8954,
+            "precision": 0.89577,
+            "recall": 0.8954,
+            "f1_score": 0.89527,
+            "roc_auc": 0.99372
+        },
+        "Cross Gradient Booster (Random Forest)": {
+            "accuracy": 0.71321,
+            "precision": 0.72041,
+            "recall": 0.71321,
+            "f1_score": 0.70892,
+            "roc_auc": 0.95521
+        }
+    },
+    "30 seconds": {
+        "Gaussian Naive Bayes": {
+            "accuracy": 0.565,
+            "precision": 0.57056,
+            "recall": 0.565,
+            "f1_score": 0.55523,
+            "roc_auc": 0.90606
+        },
+        "Bernoulli Naive Bayes": {
+            "accuracy": 0.07,
+            "precision": 0.00492,
+            "recall": 0.07,
+            "f1_score": 0.0092,
+            "roc_auc": 0.50137
+        },
+        "Multinomial Naive Bayes": {
+            "accuracy": 0.54,
+            "precision": 0.54603,
+            "recall": 0.54,
+            "f1_score": 0.528,
+            "roc_auc": 0.87915
+        },
+        "Support Vector Machine": {
+            "accuracy": 0.73,
+            "precision": 0.73177,
+            "recall": 0.73,
+            "f1_score": 0.72624,
+            "roc_auc": 0
+        },
+        "K-Nearest Neighbors": {
+            "accuracy": 0.65,
+            "precision": 0.70058,
+            "recall": 0.65,
+            "f1_score": 0.64946,
+            "roc_auc": 0.94635
+        },
+        "Decision Trees": {
+            "accuracy": 0.565,
+            "precision": 0.58996,
+            "recall": 0.565,
+            "f1_score": 0.57048,
+            "roc_auc": 0.75692
+        },
+        "Random Forest": {
+            "accuracy": 0.805,
+            "precision": 0.81178,
+            "recall": 0.805,
+            "f1_score": 0.80457,
+            "roc_auc": 0.98014
+        },
+        "Gradient Boosting": {
+            "accuracy": 0.81,
+            "precision": 0.82063,
+            "recall": 0.81,
+            "f1_score": 0.8106,
+            "roc_auc": 0.97582
+        },
+        "Cross Gradient Booster": {
+            "accuracy": 0.835,
+            "precision": 0.84889,
+            "recall": 0.835,
+            "f1_score": 0.83806,
+            "roc_auc": 0.98403
+        },
+        "Cross Gradient Booster (Random Forest)": {
+            "accuracy": 0.76,
+            "precision": 0.76216,
+            "recall": 0.76,
+            "f1_score": 0.75427,
+            "roc_auc": 0.9605
+        }
+    }
+}

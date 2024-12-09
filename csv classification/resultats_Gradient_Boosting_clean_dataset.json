@@ -1,0 +1,13 @@
+{
+    "3 seconds": {
+        "Gradient Boosting": {
+            "accuracy": 0.8008,
+            "precision": 0.80088,
+            "recall": 0.8008,
+            "f1_score": 0.80049,
+            "roc_auc": 0.97965,
+            "accuracy_gap": 0.11336,
+            "f1_gap": 0.11338
+        }
+    }
+}

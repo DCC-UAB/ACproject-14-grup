@@ -1,0 +1,74 @@
+{
+    "Gaussian Naive Bayes": {
+        "accuracy": 0.37638,
+        "precision": 0.40249,
+        "recall": 0.37638,
+        "f1_score": 0.36211,
+        "roc_auc": 0.70683,
+        "accuracy_gap": 0.02978,
+        "f1_gap": 0.02611,
+        "temps_train": 1.19976,
+        "temps_predict": 1.03276,
+        "temps_total": 2.23252
+    },
+    "Bernoulli Naive Bayes": {
+        "accuracy": 0.27728,
+        "precision": 0.24201,
+        "recall": 0.27728,
+        "f1_score": 0.22832,
+        "roc_auc": 0.68218,
+        "accuracy_gap": 0.01326,
+        "f1_gap": 0.02234,
+        "temps_train": 1.32909,
+        "temps_predict": 0.26662,
+        "temps_total": 1.59571
+    },
+    "Multinomial Naive Bayes": {
+        "accuracy": 0.3013,
+        "precision": 0.32311,
+        "recall": 0.3013,
+        "f1_score": 0.26605,
+        "roc_auc": 0.71118,
+        "accuracy_gap": 0.03729,
+        "f1_gap": 0.04729,
+        "temps_train": 0.14815,
+        "temps_predict": 0.05189,
+        "temps_total": 0.20004
+    },
+    "K-Nearest Neighbors": {
+        "accuracy": 0.54855,
+        "precision": 0.68401,
+        "recall": 0.54855,
+        "f1_score": 0.55224,
+        "roc_auc": 0.88832,
+        "accuracy_gap": 0.45095,
+        "f1_gap": 0.44726,
+        "temps_train": 0.54915,
+        "temps_predict": 0.73975,
+        "temps_total": 1.2889
+    },
+    "Decision Trees": {
+        "accuracy": 0.57758,
+        "precision": 0.58594,
+        "recall": 0.57758,
+        "f1_score": 0.57641,
+        "roc_auc": 0.80557,
+        "accuracy_gap": 0.29579,
+        "f1_gap": 0.30019,
+        "temps_train": 27.70161,
+        "temps_predict": 0.06289,
+        "temps_total": 27.7645
+    },
+    "Random Forest": {
+        "accuracy": 0.89089,
+        "precision": 0.89412,
+        "recall": 0.89089,
+        "f1_score": 0.89096,
+        "roc_auc": 0.98692,
+        "accuracy_gap": 0.10861,
+        "f1_gap": 0.10854,
+        "temps_train": 80.98016,
+        "temps_predict": 0.17382,
+        "temps_total": 81.15398
+    }
+}
