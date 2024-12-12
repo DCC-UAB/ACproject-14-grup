@@ -39,7 +39,7 @@ def definirXY_normalitzar(data):
     return X, y
 
  
-def divisio_dades(X, y, test_size=0.3):
+def divisio_dades(X, y, test_size=0.2):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=111)
     print(f"Train shape: {X_train.shape}, Test shape: {X_test.shape} (test_size={test_size})") #mostrem dimensions
     return X_train, X_test, y_train, y_test
