@@ -96,13 +96,11 @@ def grid_search_gb(X_train, y_train):
     """
     # Definir el conjunt d'hiperparàmetres inicial
     param_grid = {
-        'n_estimators': [100, 200, 500],        # Nombre d'iteracions
-        'learning_rate': [0.05, 0.1, 0.15],    # Grau d'actualització en cada arbre
-        'max_depth': [3, 5, 7],                # Profunditat màxima dels arbres
-        'subsample': [0.7, 0.8, 0.9],          # Fracció de mostres utilitzades per arbre
-        'min_samples_split': [2, 5, 10],       # Nombre mínim de mostres per dividir un node
-        'min_samples_leaf': [1, 2, 4],         # Nombre mínim de mostres per node fulla
-        'max_features': ['sqrt', 'log2', None] # Estratègia per seleccionar les característiques
+        'n_estimators': [500],
+        'learning_rate': [0.15],
+        'max_depth': [10],
+        'min_samples_split': [2, 3, 4, 5, 6, 7, 8, 9, 10],
+        'min_samples_leaf': [12],
     }
 
     # Crear el model
@@ -112,7 +110,7 @@ def grid_search_gb(X_train, y_train):
     grid_search = GridSearchCV(
         estimator=gb,
         param_grid=param_grid,
-        cv=5,                         # Nombre de folds per cross-validation
+        cv=4,                         # Nombre de folds per cross-validation
         scoring='f1_weighted',        # Mètrica d'avaluació
         verbose=2,                    # Mostra detalls del procés
         n_jobs=-1                     # Utilitza tots els cores disponibles
@@ -136,13 +134,11 @@ def random_search_gb(X_train, y_train):
     """
     # Definir distribucions aleatòries per als hiperparàmetres
     param_distributions = {
-        'n_estimators': randint(100, 1000),
-        'learning_rate': uniform(0.01, 0.2),
-        'max_depth': randint(3, 15),
-        'subsample': uniform(0.7, 0.3),
-        'min_samples_split': randint(2, 20),
-        'min_samples_leaf': randint(1, 10),
-        'max_features': ['sqrt', 'log2', None]
+        'n_estimators': randint(300, 700),
+        'learning_rate': uniform(0.05, 0.15),
+        'max_depth': randint(5, 12),
+        'min_samples_split': randint(1, 10),
+        'min_samples_leaf': randint(5, 15),
     }
 
     # Crear el model
@@ -154,7 +150,7 @@ def random_search_gb(X_train, y_train):
         param_distributions=param_distributions,
         n_iter=200,                  # Nombre de combinacions aleatòries
         scoring='f1_weighted',       # Mètrica d'avaluació
-        cv=5,                        # Nombre de folds per cross-validation
+        cv=3,                        # Nombre de folds per cross-validation
         verbose=2,                   # Mostra detalls del procés
         n_jobs=-1,                   # Utilitza tots els cores disponibles
         random_state=42
@@ -201,10 +197,10 @@ if __name__ == "__main__":
         # Prova amb Randomized Search
         # millor_model = random_search_gb(X_train, y_train)
 
-        millor_model = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=0)
+        millor_model = GradientBoostingClassifier(n_estimators=500, learning_rate=0.1, max_depth=10, min_samples_leaf=12, min_samples_split=2)
         # Avaluar i guardar resultats
         model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized GradientBoostingClassifier", resultats, dataset=tipus)
 
     # Guarda els resultats al fitxer JSON
-    guardar_resultats_a_json(resultats, "sssrrss.json")
+    guardar_resultats_a_json(resultats, "aaaaaaaa.json")
 
