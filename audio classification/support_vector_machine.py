@@ -23,21 +23,15 @@ from scipy.stats import randint, uniform
 
 current_dir = Path(__file__).parent
 
-# Construir el camí als csv
-cami_csv_3s = current_dir.parent / "datasets" / "Data1" / "features_3_sec.csv"
-cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
-
-data3s = pd.read_csv(cami_csv_3s)
-data30s = pd.read_csv(cami_csv_30s)
 
 def codificar_label(data):
     label_encoder = preprocessing.LabelEncoder()
-    data['label'] = label_encoder.fit_transform(data['label'])
+    data['genre'] = label_encoder.fit_transform(data['genre'])
     return data
 
 def definirXY_normalitzar(data):
-    X = data.drop(['label', 'filename'], axis=1)  # Treure label (valor a predir) i filename (redundant)
-    y = data['label']  # Variable independent (a predir)
+    X = data.drop(['genre', 'segment'], axis=1)  # Treure label (valor a predir) i filename (redundant)
+    y = data['genre']  # Variable independent (a predir)
     columnes = X.columns
     min_max_scaler = MinMaxScaler()
     np_scaled = min_max_scaler.fit_transform(X)  # Escalem
@@ -102,14 +96,21 @@ def grid_search_svm(X_train, y_train):
     Realitza una cerca d'hiperparàmetres utilitzant GridSearchCV per a SVM.
     """
 
+    # param_grid = {
+    # 'kernel': ['rbf'],  
+    # 'C': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],  
+    # 'gamma': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],  # Ampli rang de gamma
+    # 'class_weight': ['balanced']  # Per a desequilibris en les dades
+    # }
+
     param_grid = {
-    'kernel': ['rbf'],  
-    'C': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],  
-    'gamma': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],  # Ampli rang de gamma
-    'class_weight': ['balanced']  # Per a desequilibris en les dades
+    'kernel': ['rbf', 'sigmoid', 'poly'],  # Excloem 'linear'
+    'C': [0.01, 0.1, 1, 10, 100, 1000],  # Valors més fins per regularització
+    'gamma': ['scale', 0.001, 0.01, 0.1, 1, 10],  # Ampli rang de gamma
+    'degree': [2, 3, 4, 5],  # Només per a 'poly'
+    'coef0': [-1, 0, 0.5, 1, 5, 10],  # Per a 'poly'
+    'class_weight': [None, 'balanced']  # Per a desequilibris en les dades
     }
-
-
 
 
    
@@ -124,40 +125,6 @@ def grid_search_svm(X_train, y_train):
 
     return grid_search.best_estimator_
 
-def random_seach_hyperparameters(X_train, y_train):
-    
-    xgb = XGBClassifier(tree_method='hist', random_state=42)
-     # Definir el grid d'hiperparàmetres
-    param_distributions = {
-        'n_estimators': randint(100, 1000),
-        'max_depth': randint(3, 15),
-        'learning_rate': uniform(0.01, 0.2),
-        'subsample': uniform(0.7, 0.3),
-        'colsample_bytree': uniform(0.7, 0.3),
-        'gamma': uniform(0, 5),
-        'reg_alpha': uniform(0, 1),
-        'reg_lambda': uniform(1, 10)
-    }
-     # Configura RandomizedSearchCV
-    random_search = RandomizedSearchCV(
-        estimator=xgb,
-        param_distributions=param_distributions,
-        n_iter=2000,  # Nombre de combinacions aleatòries
-        scoring='accuracy',  # Pots canviar la mètrica
-        cv=5,
-        verbose=2,
-        n_jobs=-1,
-        random_state=42
-    )
-
-    
-    random_search.fit(X_train, y_train)
-
-    # Resultats
-    print("\nMillors hiperparàmetres trobats amb RandomizedSearchCV:")
-    print(random_search.best_params_)
-
-    return random_search.best_estimator_
     
 
 
@@ -166,9 +133,12 @@ if __name__ == "__main__":
     current_dir = Path(__file__).parent
 
     # Construir el camí als csv
-    cami_csv_3s = current_dir.parent / "csv classification" / "features_3_sec_top20_XGBoost.csv"
+    cami_audio = current_dir.parent / "audio classification" / "audio_features_prova2.csv"
+    # cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
 
-    data3s = pd.read_csv(cami_csv_3s)
+    dataaudio = pd.read_csv(cami_audio)
+    # data30s = pd.read_csv(cami_csv_30s)
+
 
     resultats = {}
 
@@ -177,23 +147,22 @@ if __name__ == "__main__":
     # model_title = "Cross Gradient Boosting"
 
     # Avaluació de cada dataset
-    for data, tipus in [(data3s, "3 seconds")]:  # Diferents datasets
+    for data, tipus in [(dataaudio, "audio")]:  # Diferents datasets
         print(f"\n### Avaluant {tipus} data ###")
         data = codificar_label(data)
         X, y = definirXY_normalitzar(data)
 
         X_train, X_test, y_train, y_test = divisio_dades(X, y, test_size=0.2)
         # millor_model = XGBClassifier(n_estimators=1000, learning_rate=0.05)
-        # millor_model = grid_search_svm(X_train, y_train)
-        # millor_model = random_seach_hyperparameters(X_train, y_train)
+        millor_model = grid_search_svm(X_train, y_train)
 
-        millor_model = SVC(decision_function_shape="ovo", C=3, class_weight='balanced',
-                           gamma=17, kernel = 'rbf', probability=True
-        )
+        # millor_model = SVC(decision_function_shape="ovo", C=10, class_weight='balanced',
+        #                    gamma=10, kernel = 'rbf', probability=True
+        # )
 
         # Avaluar i guardar resultats del model optimitzat
-        model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized SVMClassifier", resultats, dataset=tipus)
+        # model_assess_to_json(millor_model, X_train, X_test, y_train, y_test, "Optimized SVMClassifier", resultats, dataset=tipus)
 
     # Guarda els resultats al fitxer JSON
-    guardar_resultats_a_json(resultats, "resultats_support_vector_machine_best_hyperparametresP4.json")
+    # guardar_resultats_a_json(resultats, "resultats_support_vector_machine_best_hyperparametresP1.json")
 
