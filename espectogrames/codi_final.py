@@ -111,7 +111,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["temps_predict"]=predict_time
     resultats[title]["temps_total"]=total_time
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_CV_PCA.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_CV_PCA2.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
   # Aplicar PCA
     print("\nAplicant PCA per reduir la dimensionalitat...")
-    pca = PCA(n_components=100)  # Seleccionar 100 components principals
+    pca = PCA(n_components= 50)  # Seleccionar 50 components principals
     X_reduced = pca.fit_transform(X)
 
     X_train, X_test, y_train, y_test = train_test_split(X_reduced, y, test_size=0.2, random_state=111, stratify=y)
