@@ -31,7 +31,7 @@ def extract_features(audio_path, genre, segment = None):
         harmonic = librosa.effects.harmonic(y)
         features['tonnetz'] = np.mean(librosa.feature.tonnetz(y=harmonic, sr=sr))
 
-        mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=300)
+        mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=128)
         for i, mfcc in enumerate(mfccs):
             features[f'mfcc{i+1}'] = np.mean(mfcc)
         return features

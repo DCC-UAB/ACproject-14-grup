@@ -14,16 +14,14 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score, KFold
 from xgboost import XGBClassifier, XGBRFClassifier
 
-
-
 def codificar_label(data):
     label_encoder = preprocessing.LabelEncoder()
-    data['label'] = label_encoder.fit_transform(data['label'])
+    data['genre'] = label_encoder.fit_transform(data['genre'])
     return data
 
 def definirXY_normalitzar(data):
-    X = data.drop(['label', 'filename'], axis=1)  # Treure label (valor a predir) i filename (redundant)
-    y = data['label']  # Variable independent (a predir)
+    X = data.drop(['genre', 'segment'], axis=1)  # Treure label (valor a predir) i filename (redundant)
+    y = data['genre']  # Variable independent (a predir)
     columnes = X.columns
     min_max_scaler = MinMaxScaler()
     np_scaled = min_max_scaler.fit_transform(X)  # Escalem
@@ -35,20 +33,19 @@ def divisio_dades(X, y, test_size=0.2):
     print(f"Train shape: {X_train.shape}, Test shape: {X_test.shape} (test_size={test_size})")  # Mostrem dimensions
     return X_train, X_test, y_train, y_test
 
-
 if __name__ == "__main__":
 
     current_dir = Path(__file__).parent
 
     # Construir el camí als csv
-    cami_csv_3s = current_dir.parent / "csv classification" / "features_3_sec_top20_XGBoost.csv"
+    cami_audio = current_dir.parent / "audio classification" / "audio_features_prova2.csv"
     # cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
 
-    data3s = pd.read_csv(cami_csv_3s)
+    dataaudio = pd.read_csv(cami_audio)
     # data30s = pd.read_csv(cami_csv_30s)
 
     # Encode label
-    data = codificar_label(data3s)
+    data = codificar_label(dataaudio)
 
     # Define X and y and normalize
     X, y = definirXY_normalitzar(data)
@@ -56,20 +53,11 @@ if __name__ == "__main__":
     # Split data
     X_train, X_test, y_train, y_test = divisio_dades(X, y)
 
-    # Create model
-    millor_model = XGBClassifier(
-        colsample_bytree=0.85,
-        learning_rate=0.075,
-        max_depth=5,
-        n_estimators=1500,
-        subsample=0.8,
-        tree_method='hist',
-        random_state=42
-    )
+    models_top = [(SVC(decision_function_shape="ovo", C=10, class_weight='balanced',gamma=10, kernel = 'rbf', probability=True), "Support Vector Machine")]
 
     # Cross validation
     kfold = KFold(n_splits=10, random_state=111, shuffle=True)
 
-    results = cross_val_score(millor_model, X, y, cv=kfold)
-
-    print("Best Accuracy: %.2f%%" % (results.max()*100), "Mean Accuracy: %.2f%%" % (results.mean()*100), "Std: %.2f%%" % (results.std()*100))
+    for model, name in models_top:
+        results = cross_val_score(model, X, y, cv=kfold)
+        print(f"{name} - Best Accuracy: {results.max()*100:.2f}%, Mean Accuracy: {results.mean()*100:.2f}%, Std: {results.std()*100:.2f}%")
