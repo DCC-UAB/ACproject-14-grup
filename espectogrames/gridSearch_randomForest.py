@@ -51,13 +51,14 @@ def definirXY_normalitzar(data):
 
 def grid_search_random_forest(X_train, y_train):
 
-    param_grid = {"n_estimators": [100, 300, 500, 1000],  
-                  "max_depth": [10, 15, 20, None],      
-                  "max_features": ["sqrt", "log2"], 
-                  "min_samples_split": [2, 5, 10, 15],  
-                  "min_samples_leaf": [1, 2, 4, 6]     
-                   }
-
+    param_grid = {
+        "n_estimators": [800, 1000, 1500],
+        "max_depth": [18, 20, 30, 35],
+        "max_features": ["sqrt", "log2", None],
+        "min_samples_split": [1, 2, 3], 
+        "min_samples_leaf": [1, 2, 3, 4], 
+        }
+    
     grid_search = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, cv=3, scoring="accuracy", n_jobs=-1, verbose=2)
 
     grid_search.fit(X_train, y_train)
