@@ -12,6 +12,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from sklearn import preprocessing
 from sklearn.model_selection import StratifiedKFold
+from sklearn.decomposition import PCA
 
 
 def augment_image(image):
@@ -137,21 +138,22 @@ if __name__ == "__main__":
     data, label_encoder = codificar_label(data)
     X, y = definirXY_normalitzar(data)
 
-    """
-    pca = PCA(n_components=100)
+  # Aplicar PCA
+    print("\nAplicant PCA per reduir la dimensionalitat...")
+    pca = PCA(n_components=100)  # Seleccionar 100 components principals
     X_reduced = pca.fit_transform(X)
-    """
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X_reduced, y, test_size=0.2, random_state=111, stratify=y)
     print('esta pasant algo')
     best_rf_model =  RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1)
     print('randomcalculat')
-    model_assess_to_json(best_rf_model, X_train, X_test, y_train, y_test, "Random Forest (GS+CV)", resultats)
+    model_assess_to_json(best_rf_model, X_train, X_test, y_train, y_test, "Random Forest (GS+CV+PCA)", resultats)
 
-    cv_scores = cross_validation(best_rf_model, X, y)
+    cv_scores = cross_validation(best_rf_model, X_reduced, y)
     print('esta pasant algo2')
-    resultats["Random Forest (GS+CV)"]["cross_val_scores"] = cv_scores.tolist()
-    resultats["Random Forest (GS+CV)"]["cross_val_mean"] = np.mean(cv_scores)
+    resultats["Random Forest (GS+CV+PCA)"]["cross_val_scores"] = cv_scores.tolist()
+    resultats["Random Forest (GS+CV+PCA)"]["cross_val_mean"] = np.mean(cv_scores)
+    resultats["Random Forest (GS+CV+PCA)"]["n_components_pca"] = 100
 
     # Guarda els resultats al fitxer JSON
     guardar_resultats_a_json(resultats)
