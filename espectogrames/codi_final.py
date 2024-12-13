@@ -153,7 +153,7 @@ if __name__ == "__main__":
     print('esta pasant algo2')
     resultats["Random Forest (GS+CV+PCA)"]["cross_val_scores"] = cv_scores.tolist()
     resultats["Random Forest (GS+CV+PCA)"]["cross_val_mean"] = np.mean(cv_scores)
-    resultats["Random Forest (GS+CV+PCA)"]["n_components_pca"] = 100
+    resultats["Random Forest (GS+CV+PCA)"]["n_components_pca"] = 50
 
     # Guarda els resultats al fitxer JSON
     guardar_resultats_a_json(resultats)
