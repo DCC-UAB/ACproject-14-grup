@@ -1,0 +1,17 @@
+{
+    "Logistic Regression": {
+        "best_params": {
+            "C": 0.1,
+            "solver": "lbfgs"
+        },
+        "grid_search_best_score": 0.48310613393258023
+    },
+    "Random Forest": {
+        "best_params": {
+            "max_depth": 20,
+            "min_samples_split": 5,
+            "n_estimators": 300
+        },
+        "grid_search_best_score": 0.4833593924503015
+    }
+}
