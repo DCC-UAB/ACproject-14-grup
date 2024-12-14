@@ -13,6 +13,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from sklearn import preprocessing
 from sklearn.model_selection import StratifiedKFold
 from sklearn.decomposition import PCA
+from sklearn.pipeline import Pipeline
 
 
 def augment_image(image):
@@ -31,11 +32,9 @@ def processament(data, labels, img_size=(128,128)):
                 img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                 if img is not None:
                     img_resized = cv2.resize(img, img_size) / 255.0
-                    augmented_images = augment_image(img_resized)
-                    
-                    for aug_img in augmented_images:
-                        data.append(aug_img.flatten())
-                        labels.append(genre)
+                    data.append(img_resized.flatten())
+                    labels.append(genre)
+        
 
 def codificar_label(data):
     label_encoder = preprocessing.LabelEncoder()
@@ -111,7 +110,7 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["temps_predict"]=predict_time
     resultats[title]["temps_total"]=total_time
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_CV_PCA1.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Comp1.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -129,7 +128,6 @@ if __name__ == "__main__":
     resultats = {}    
     
     data, labels = [], []
-
     processament(data, labels, img_size=(128,128))
     
     data = pd.DataFrame(data)
@@ -138,22 +136,35 @@ if __name__ == "__main__":
     data, label_encoder = codificar_label(data)
     X, y = definirXY_normalitzar(data)
 
-  # Aplicar PCA
-    print("\nAplicant PCA per reduir la dimensionalitat...")
-    pca = PCA(n_components= 100)  # Seleccionar 100 components principals
-    X_reduced = pca.fit_transform(X)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
+    
+    # Aplicar augmentació només al conjunt d’entrenament
+    print("\nAplicant augmentació al conjunt d'entrenament...")
+    augmented_data, augmented_labels = [], []
+    for i in range(len(X_train)):
+        img = X_train.iloc[i].values.reshape(128, 128)  # Reconstrueix la imatge 2D
+        genre = y_train.iloc[i]
+        augmented_images = augment_image(img)  
+        for aug_img in augmented_images:
+            augmented_data.append(aug_img.flatten())
+            augmented_labels.append(genre)
 
-    X_train, X_test, y_train, y_test = train_test_split(X_reduced, y, test_size=0.2, random_state=111, stratify=y)
-    print('esta pasant algo')
-    best_rf_model =  RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1)
-    print('randomcalculat')
-    model_assess_to_json(best_rf_model, X_train, X_test, y_train, y_test, "Random Forest (GS+CV+PCA)", resultats)
+    # Combinar dades augmentades amb les originals del conjunt d'entrenament
+    X_train_augmented = pd.DataFrame(augmented_data)
+    y_train_augmented = pd.Series(augmented_labels)
 
-    cv_scores = cross_validation(best_rf_model, X_reduced, y)
-    print('esta pasant algo2')
-    resultats["Random Forest (GS+CV+PCA)"]["cross_val_scores"] = cv_scores.tolist()
-    resultats["Random Forest (GS+CV+PCA)"]["cross_val_mean"] = np.mean(cv_scores)
-    resultats["Random Forest (GS+CV+PCA)"]["n_components_pca"] = 100
+    # Entrenar el model Random Forest
+    print("\nEntrenant el Random Forest optimitzat amb pipeline (per poder aplicar PCA)...")
+    pipeline = Pipeline([('pca', PCA(n_components=100)), ('rf', RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1))])    
+    
+    pipeline.fit(X_train_augmented, y_train_augmented)
+
+    model_assess_to_json(pipeline, X_train_augmented, X_test, y_train_augmented, y_test, "Random Forest Comprovacions", resultats)
+
+    cv_scores = cross_validation(pipeline, X_train_augmented, y_train_augmented)
+    
+    resultats["Random Forest Comprovacions"]["cross_val_scores"] = cv_scores.tolist()
+    resultats["Random Forest Comprovacions"]["cross_val_mean"] = np.mean(cv_scores)
 
     # Guarda els resultats al fitxer JSON
     guardar_resultats_a_json(resultats)
