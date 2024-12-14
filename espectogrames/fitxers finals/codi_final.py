@@ -32,7 +32,7 @@ def extract_audio_features(img_path):
     if img is None:
         return None
     img_resized = cv2.resize(img, (128, 128)) / 255.0  # Normalitzar
-    S = librosa.feature.melspectrogram(S=img_resized, sr=22050)  # Convertir espectrograma mel
+    S = librosa.feature.melspectrogram(S=img_resized, sr=22050, n_fft=2048, hop_length=512, n_mels=64, fmax=8000)  # Paràmetres ajustats
     features = []
 
     # MFCC
@@ -66,13 +66,13 @@ def processament(data, labels, img_size=(128,128)):
         if os.path.isdir(genre_path):
             for img_file in os.listdir(genre_path):
                 img_path = os.path.join(genre_path, img_file)
-                img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-                if img is not None:
-                    img_resized = cv2.resize(img, img_size) / 255.0
-                    features = extract_audio_features(img_resized)
-                    if features is not None:
-                        data.append(img_resized.flatten())
-                        labels.append(genre)
+                #img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+                #if img is not None:
+                    #img_resized = cv2.resize(img, img_size) / 255.0
+                features = extract_audio_features(img_path)
+                if features is not None:
+                    data.append(features)
+                    labels.append(genre)
         
 
 def codificar_label(data):
@@ -217,7 +217,7 @@ def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, r
         resultats[title]["Error"] = f"Error durant l'avaluació: {str(e)}"
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Comp2_totsmodels_timer.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="totsmodels_caracteristiquesAudio.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -285,7 +285,7 @@ if __name__ == "__main__":
     X_train_augmented = pd.DataFrame(augmented_data)
     y_train_augmented = pd.Series(augmented_labels)
     """
-    
+
     print("\n[INFO] Entrenant els models...")
     for model, title in models:
         print(f"\n[INFO] Començant l'entrenament per al model {title}...")

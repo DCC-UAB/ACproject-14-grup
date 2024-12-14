@@ -23,7 +23,7 @@ original: logistic regression amb 0.53 i rf amb 0.435
 
 augment imatges: logistic regression amb 0.53 i rf amb 0.48
 
-extracció característiques audio: 
+extracció característiques audio: 0.375 log reg i rf
 
 
 
