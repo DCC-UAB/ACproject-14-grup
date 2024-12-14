@@ -8,13 +8,19 @@ from pathlib import Path
 from collections import Counter
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from sklearn import preprocessing
 from sklearn.model_selection import StratifiedKFold
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
-
+from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from xgboost import XGBClassifier, XGBRFClassifier
+from multiprocessing import Process
 
 def augment_image(image):
     flipped = np.fliplr(image)
@@ -110,6 +116,54 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["temps_predict"]=predict_time
     resultats[title]["temps_total"]=total_time
 
+def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, resultats, timeout=360):
+    """
+    Avaluar un model amb diverses mètriques i interrompre si supera el temps límit (timeout).
+    """
+    if title not in resultats:
+        resultats[title] = {}
+
+    # Entrenar el model amb multiprocessing i timeout
+    def entrenar_model():
+        model.fit(X_train, y_train)
+
+    process = Process(target=entrenar_model)
+    process.start()
+
+    # Supervisar el temps
+    process.join(timeout)
+    if process.is_alive():
+        print(f"Model {title} interromput després de {timeout / 60:.1f} minuts.")
+        process.terminate()
+        process.join()
+        resultats[title]["Error"] = f"Entrenament interromput després de {timeout / 60:.1f} minuts."
+        return  # Surt de la funció si l'entrenament es cancel·la
+
+    # Continuar amb l'avaluació si el model s'ha entrenat correctament
+    start_predict = time.time()
+    preds = model.predict(X_test)
+    predict_time = round(time.time() - start_predict, 5)
+
+    # Calcular mètriques per al test
+    accuracy_test = round(accuracy_score(y_test, preds), 5)
+    precision_test = round(precision_score(y_test, preds, average="weighted", zero_division=0), 5)
+    recall_test = round(recall_score(y_test, preds, average="weighted", zero_division=0), 5)
+    f1_test = round(f1_score(y_test, preds, average="weighted", zero_division=0), 5)
+    
+    if len(np.unique(y_test)) > 1 and hasattr(model, "predict_proba"):
+        roc_auc_test = round(roc_auc_score(y_test, model.predict_proba(X_test), multi_class="ovr"), 5)
+    else:
+        roc_auc_test = None
+
+    # Afegir mètriques al diccionari
+    resultats[title]["accuracy"] = accuracy_test
+    resultats[title]["precision"] = precision_test
+    resultats[title]["recall"] = recall_test
+    resultats[title]["f1_score"] = f1_test
+    if roc_auc_test is not None:
+        resultats[title]["roc_auc"] = roc_auc_test
+    resultats[title]["temps_predict"] = predict_time
+
 def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Comp1.json"):
     """
     Guarda els resultats en un fitxer JSON.
@@ -126,7 +180,7 @@ def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Comp1.json"):
 if __name__ == "__main__":
     base_dir = "ACproject-14-grup/datasets/Data1/images_original"
     resultats = {}    
-    
+   
     data, labels = [], []
     processament(data, labels, img_size=(128,128))
     
@@ -136,15 +190,17 @@ if __name__ == "__main__":
     data, label_encoder = codificar_label(data)
     X, y = definirXY_normalitzar(data)
 
+    """
     # Cross-Validation sobre el dataset original (sense augmentació)
     print("\nRealitzant Cross-Validation sobre el dataset original...")
     pipeline_original = Pipeline([('pca', PCA(n_components=100)), ('rf', RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1, random_state= 32))])    
-    
     cv_scores = cross_validation(pipeline_original, X, y)
-    
+
     resultats["Random Forest CV sense augmentació"]["cross_val_scores"] = cv_scores.tolist()
     resultats["Random Forest CV sense augmentació"]["cross_val_mean"] = np.mean(cv_scores)
-    
+    """    
+
+    print("\nDividint dataset en conjunt train i test...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
     
     # Aplicar augmentació només al conjunt d’entrenament
@@ -161,19 +217,26 @@ if __name__ == "__main__":
     X_train_augmented = pd.DataFrame(augmented_data)
     y_train_augmented = pd.Series(augmented_labels)
 
+    models = [(BernoulliNB(), "Naive Bayes (BernoulliNB)"),
+              (GaussianNB(), "Naive Bayes (GaussianNB)"),
+              (MultinomialNB(), "Naive Bayes (MultinomialNB)"),
+              (LogisticRegression(max_iter=1000, random_state=42), "Logistic Regression"),
+              (KNeighborsClassifier(n_neighbors=7), "K-Nearest Neighbors"),
+              (DecisionTreeClassifier(random_state=42), "Decision Tree"),
+              (SVC(kernel="rbf", probability=True, random_state=42), "Support Vector Machine (SVM)"),
+              (RandomForestClassifier(n_estimators=100, random_state=42), "Random Forest"),
+              (GradientBoostingClassifier(random_state=42), "Gradient Boosting"),
+              (XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGB)"),
+              (XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGBRF)")]
+    
+
     # Entrenar el model Random Forest
-    print("\nEntrenant el Random Forest optimitzat amb pipeline (per poder aplicar PCA)...")
-    pipeline_augmentat = Pipeline([('pca', PCA(n_components=100)), ('rf', RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1, random_state= 32))])    
-    
-    pipeline_augmentat.fit(X_train_augmented, y_train_augmented)
-
-    model_assess_to_json(pipeline_augmentat, X_train_augmented, X_test, y_train_augmented, y_test, "Random Forest Comprovacions", resultats)
-
-    print("\nRealitzant Cross-Validation amb el conjunt augmentat...")
-    cv_scores = cross_validation(pipeline_augmentat, X_train_augmented, y_train_augmented)
-    
-    resultats["Random Forest CV amb augmentació"]["cross_val_scores"] = cv_scores.tolist()
-    resultats["Random Forest CV amb augmentació"]["cross_val_mean"] = np.mean(cv_scores)
+    print("\nEntrenant els models...")
+    for model, title in models:
+        print(f"\nModel: {title}")
+        pipeline_augmentat = Pipeline([('pca', PCA(n_components=100)), ('model', model)])
+       
+        model_assess_to_json_timer(pipeline_augmentat, X_train_augmented, X_test, y_train_augmented, y_test, title, resultats)
 
     # Guarda els resultats al fitxer JSON
     guardar_resultats_a_json(resultats)

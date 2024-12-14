@@ -136,6 +136,17 @@ def guardar_resultats_a_json(resultats, nom_fitxer="resultats_GridSearch.json"):
 if __name__ == "__main__":
     base_dir = "ACproject-14-grup/datasets/Data1/images_original"
     resultats = {}    
+    models = [(BernoulliNB(), "Naive Bayes (BernoulliNB)"),
+              (GaussianNB(), "Naive Bayes (GaussianNB)"),
+              (MultinomialNB(), "Naive Bayes (MultinomialNB)"),
+              (LogisticRegression(max_iter=1000, random_state=42), "Logistic Regression"),
+              (KNeighborsClassifier(n_neighbors=7), "K-Nearest Neighbors"),
+              (DecisionTreeClassifier(random_state=42), "Decision Tree"),
+              (SVC(kernel="rbf", probability=True, random_state=42), "Support Vector Machine (SVM)"), ç
+              (RandomForestClassifier(n_estimators=100, random_state=42), "Random Forest"),
+              (GradientBoostingClassifier(random_state=42), "Gradient Boosting"),
+              (XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGB)"),
+              (XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGBRF)")]
     
     data, labels = [], []
 
@@ -160,6 +171,7 @@ if __name__ == "__main__":
 
     # Entrenar i avaluar el millor model
     print("\nEntrenant i avaluant el millor Random Forest...")
+    
     model_assess_to_json(best_rf_model, X_train, X_test, y_train, y_test, "Random Forest (GS)", resultats)
 
     # Guarda els resultats al fitxer JSON
