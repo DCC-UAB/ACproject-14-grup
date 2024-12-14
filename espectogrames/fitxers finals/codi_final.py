@@ -23,11 +23,11 @@ from xgboost import XGBClassifier, XGBRFClassifier
 import threading
 import librosa
 import librosa.display
-
-def extract_audio_features(img_path):
-    """
-    Extreu característiques avançades d'àudio d'un espectrograma.
-    """
+"""
+    def extract_audio_features(img_path):
+    
+    #Extreu característiques avançades d'àudio d'un espectrograma.
+    
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     if img is None:
         return None
@@ -52,6 +52,7 @@ def extract_audio_features(img_path):
     features.extend(chroma.flatten())
 
     return features
+"""
 
 def augment_image(image):
     flipped = np.fliplr(image)
@@ -66,12 +67,12 @@ def processament(data, labels, img_size=(128,128)):
         if os.path.isdir(genre_path):
             for img_file in os.listdir(genre_path):
                 img_path = os.path.join(genre_path, img_file)
-                #img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-                #if img is not None:
-                    #img_resized = cv2.resize(img, img_size) / 255.0
-                features = extract_audio_features(img_path)
-                if features is not None:
-                    data.append(features)
+                img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+                if img is not None:
+                    img_resized = cv2.resize(img, img_size) / 255.0
+                #features = extract_audio_features(img_path)
+                #if features is not None:
+                    data.append(img_resized)
                     labels.append(genre)
         
 
@@ -271,7 +272,7 @@ if __name__ == "__main__":
     print("\n[INFO] Dividint dataset en conjunt train i test...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
 
-    """
+    
     print("\n[INFO] Aplicant augmentació només al conjunt d'entrenament...")
     augmented_data, augmented_labels = [], []
     for i in range(len(X_train)):
@@ -284,12 +285,12 @@ if __name__ == "__main__":
 
     X_train_augmented = pd.DataFrame(augmented_data)
     y_train_augmented = pd.Series(augmented_labels)
-    """
+    
 
     print("\n[INFO] Entrenant els models...")
     for model, title in models:
         print(f"\n[INFO] Començant l'entrenament per al model {title}...")
-        model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, resultats)
+        model_assess_to_json_timer(model, X_train_augmented, X_test, y_train_augmented, y_test, title, resultats)
 
     print("\n[INFO] Guardant els resultats al fitxer JSON...")
     guardar_resultats_a_json(resultats)
