@@ -179,7 +179,19 @@ def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Comp2_totsmodels_t
 
 if __name__ == "__main__":
     base_dir = "ACproject-14-grup/datasets/Data1/images_original"
-    resultats = {}    
+    resultats = {}   
+
+    models = [(BernoulliNB(), "Naive Bayes (BernoulliNB)"),
+              (GaussianNB(), "Naive Bayes (GaussianNB)"),
+              (MultinomialNB(), "Naive Bayes (MultinomialNB)"),
+              (LogisticRegression(max_iter=1000, random_state=42), "Logistic Regression"),
+              (KNeighborsClassifier(n_neighbors=7), "K-Nearest Neighbors"),
+              (DecisionTreeClassifier(random_state=42), "Decision Tree"),
+              (SVC(kernel="rbf", probability=True, random_state=42), "Support Vector Machine (SVM)"),
+              (RandomForestClassifier(n_estimators=100, random_state=42), "Random Forest"),
+              (GradientBoostingClassifier(random_state=42), "Gradient Boosting"),
+              (XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGB)"),
+              (XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGBRF)")] 
    
     data, labels = [], []
     processament(data, labels, img_size=(128,128))
@@ -193,12 +205,13 @@ if __name__ == "__main__":
     """
     # Cross-Validation sobre el dataset original (sense augmentació)
     print("\nRealitzant Cross-Validation sobre el dataset original...")
-    pipeline_original = Pipeline([('pca', PCA(n_components=100)), ('rf', RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1, random_state= 32))])    
-    cv_scores = cross_validation(pipeline_original, X, y)
-
-    resultats["Random Forest CV sense augmentació"]["cross_val_scores"] = cv_scores.tolist()
-    resultats["Random Forest CV sense augmentació"]["cross_val_mean"] = np.mean(cv_scores)
-    """    
+    for model, title in models:
+        print(f"\nModel: {title}")
+    
+        cv_scores = cross_validation(model, X, y)
+        resultats["Random Forest CV sense augmentació"]["cross_val_scores"] = cv_scores.tolist()
+        resultats["Random Forest CV sense augmentació"]["cross_val_mean"] = np.mean(cv_scores)
+   """
 
     print("\nDividint dataset en conjunt train i test...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
@@ -217,26 +230,46 @@ if __name__ == "__main__":
     X_train_augmented = pd.DataFrame(augmented_data)
     y_train_augmented = pd.Series(augmented_labels)
 
-    models = [(BernoulliNB(), "Naive Bayes (BernoulliNB)"),
-              (GaussianNB(), "Naive Bayes (GaussianNB)"),
-              (MultinomialNB(), "Naive Bayes (MultinomialNB)"),
-              (LogisticRegression(max_iter=1000, random_state=42), "Logistic Regression"),
-              (KNeighborsClassifier(n_neighbors=7), "K-Nearest Neighbors"),
-              (DecisionTreeClassifier(random_state=42), "Decision Tree"),
-              (SVC(kernel="rbf", probability=True, random_state=42), "Support Vector Machine (SVM)"),
-              (RandomForestClassifier(n_estimators=100, random_state=42), "Random Forest"),
-              (GradientBoostingClassifier(random_state=42), "Gradient Boosting"),
-              (XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGB)"),
-              (XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGBRF)")]
-    
 
     # Entrenar el model Random Forest
     print("\nEntrenant els models...")
     for model, title in models:
         print(f"\nModel: {title}")
-        pipeline_augmentat = Pipeline([('pca', PCA(n_components=100)), ('model', model)])
-       
-        model_assess_to_json_timer(pipeline_augmentat, X_train_augmented, X_test, y_train_augmented, y_test, title, resultats)
 
+        try:
+            # **Prova amb scaler i PCA**
+            scaler = MinMaxScaler()
+            X_train_scaled = scaler.fit_transform(X_train_augmented)
+            X_test_scaled = scaler.transform(X_test)
+
+            pca = PCA(n_components=100)
+            X_train_pca = pca.fit_transform(X_train_scaled)
+            X_test_pca = pca.transform(X_test_scaled)
+
+            pipeline_augmentat = Pipeline([
+                ('model', model)
+            ])
+
+            # Entrenar i avaluar amb control de temps
+            model_assess_to_json_timer(pipeline_augmentat, X_train_pca, X_test_pca, y_train_augmented, y_test, title, resultats)
+
+        except Exception as e:
+            print(f"Error amb scaler i PCA per al model {title}: {e}")
+            print(f"Reintentant sense scaler ni PCA per al model {title}...")
+
+            # **Prova sense scaler ni PCA**
+            pipeline_augmentat = Pipeline([
+                ('model', model)
+            ])
+
+            try:
+                # Entrenar i avaluar només amb el model i dades originals
+                model_assess_to_json_timer(pipeline_augmentat, X_train_augmented, X_test, y_train_augmented, y_test, title + " (sense scaler ni PCA)", resultats)
+
+            except Exception as e:
+                print(f"Error final per al model {title}: {e}")
+                resultats[title] = {"Error": f"Model no ha pogut ser entrenat ni sense scaler ni PCA."}
+                continue
+            
     # Guarda els resultats al fitxer JSON
     guardar_resultats_a_json(resultats)
