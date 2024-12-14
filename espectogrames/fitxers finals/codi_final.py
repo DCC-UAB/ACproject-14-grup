@@ -28,16 +28,26 @@ import librosa.display
     
     #Extreu característiques avançades d'àudio d'un espectrograma.
     
-    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     if img is None:
         return None
     img_resized = cv2.resize(img, (128, 128)) / 255.0  # Normalitzar
-    S = librosa.feature.melspectrogram(S=img_resized, sr=22050, n_fft=2048, hop_length=512, n_mels=64, fmax=8000)  # Paràmetres ajustats
+    
+    # Generar el mel spectrogram
+    S = librosa.feature.melspectrogram(S=img_resized, sr=22050, n_fft=2048, hop_length=512, n_mels=64, fmax=8000)
+    db_S = librosa.power_to_db(S, ref=np.max)  # Convertir a decibels per algunes característiques
+
     features = []
 
     # MFCC
-    mfcc = librosa.feature.mfcc(S=librosa.power_to_db(S), n_mfcc=13)
+    mfcc = librosa.feature.mfcc(S=db_S, n_mfcc=13)
     features.extend(mfcc.flatten())
+
+    # Delta i Delta-Delta de MFCC
+    mfcc_delta = librosa.feature.delta(mfcc)
+    mfcc_delta2 = librosa.feature.delta(mfcc, order=2)
+    features.extend(mfcc_delta.flatten())
+    features.extend(mfcc_delta2.flatten())
 
     # Zero Crossing Rate
     zcr = librosa.feature.zero_crossing_rate(S)
@@ -50,6 +60,40 @@ import librosa.display
     # Chroma
     chroma = librosa.feature.chroma_stft(S=S, sr=22050)
     features.extend(chroma.flatten())
+
+    # Spectral Centroid
+    centroid = librosa.feature.spectral_centroid(S=S, sr=22050)
+    features.extend(centroid.flatten())
+
+    # Spectral Bandwidth
+    bandwidth = librosa.feature.spectral_bandwidth(S=S, sr=22050)
+    features.extend(bandwidth.flatten())
+
+    # Spectral Rolloff
+    rolloff = librosa.feature.spectral_rolloff(S=S, sr=22050, roll_percent=0.85)
+    features.extend(rolloff.flatten())
+
+    # Tonnetz
+    tonnetz = librosa.feature.tonnetz(S=librosa.feature.chroma_cqt(S=S, sr=22050), sr=22050)
+    features.extend(tonnetz.flatten())
+
+    # Spectral Flatness
+    flatness = librosa.feature.spectral_flatness(S=S)
+    features.extend(flatness.flatten())
+
+    # RMS Energy
+    rms = librosa.feature.rms(S=S)
+    features.extend(rms.flatten())
+
+    # Tempo i Beats
+    tempo, beats = librosa.beat.beat_track(S=librosa.amplitude_to_db(S), sr=22050)
+    features.append(tempo)  
+    features.extend(beats[:50]) 
+
+    # Harmonic i Percussive Components
+    harmonic, percussive = librosa.effects.hpss(S)
+    features.extend(harmonic.mean(axis=1))
+    features.extend(percussive.mean(axis=1))
 
     return features
 """
