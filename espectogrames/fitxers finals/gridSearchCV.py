@@ -144,10 +144,24 @@ if __name__ == "__main__":
     X, y = definirXY_normalitzar(data)
 
     print("\n[INFO] Aplicant GridSearchCV i cross-validation amb el dataset original...")
+    
     models = [
-        (LogisticRegression(), {"C": [0.1, 1, 10], "solver": ["liblinear", "lbfgs"]}, "Logistic Regression"),
-        (RandomForestClassifier(), {"n_estimators": [100, 300], "max_depth": [10, 20], "min_samples_split": [2, 5]}, "Random Forest")
-    ]
+    (LogisticRegression(), 
+     {"C": [0.01, 0.1, 1, 10, 100, 1000],
+      "solver": ["lbfgs", "newton-cg", "saga"],
+      "penalty": ["l2", "elasticnet"],
+      "max_iter": [100, 500, 1000]},
+     "Logistic Regression"),
+    
+    (RandomForestClassifier(), 
+     {"n_estimators": [800, 1000, 1500], 
+      "max_depth": [18, 20, 30, 35], 
+      "max_features": ["sqrt", "log2", None],
+      "min_samples_split": [2, 3], 
+      "min_samples_leaf": [1, 2, 3, 4]}, 
+     "Random Forest")]
+
+    
     grid_search_with_cv_and_final_validation(X, y, resultats_original, models)
 
     print("\n[INFO] Dividint dataset en conjunt train i test...")
