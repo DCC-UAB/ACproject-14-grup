@@ -136,6 +136,15 @@ if __name__ == "__main__":
     data, label_encoder = codificar_label(data)
     X, y = definirXY_normalitzar(data)
 
+    # Cross-Validation sobre el dataset original (sense augmentació)
+    print("\nRealitzant Cross-Validation sobre el dataset original...")
+    pipeline_original = Pipeline([('pca', PCA(n_components=100)), ('rf', RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1, random_state= 32))])    
+    
+    cv_scores = cross_validation(pipeline_original, X, y)
+    
+    resultats["Random Forest CV sense augmentació"]["cross_val_scores"] = cv_scores.tolist()
+    resultats["Random Forest CV sense augmentació"]["cross_val_mean"] = np.mean(cv_scores)
+    
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
     
     # Aplicar augmentació només al conjunt d’entrenament
@@ -149,22 +158,22 @@ if __name__ == "__main__":
             augmented_data.append(aug_img.flatten())
             augmented_labels.append(genre)
 
-    # Combinar dades augmentades amb les originals del conjunt d'entrenament
     X_train_augmented = pd.DataFrame(augmented_data)
     y_train_augmented = pd.Series(augmented_labels)
 
     # Entrenar el model Random Forest
     print("\nEntrenant el Random Forest optimitzat amb pipeline (per poder aplicar PCA)...")
-    pipeline = Pipeline([('pca', PCA(n_components=100)), ('rf', RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1))])    
+    pipeline_augmentat = Pipeline([('pca', PCA(n_components=100)), ('rf', RandomForestClassifier(n_estimators=1000, max_depth=20, max_features="sqrt", min_samples_split=2, min_samples_leaf=1, random_state= 32))])    
     
-    pipeline.fit(X_train_augmented, y_train_augmented)
+    pipeline_augmentat.fit(X_train_augmented, y_train_augmented)
 
-    model_assess_to_json(pipeline, X_train_augmented, X_test, y_train_augmented, y_test, "Random Forest Comprovacions", resultats)
+    model_assess_to_json(pipeline_augmentat, X_train_augmented, X_test, y_train_augmented, y_test, "Random Forest Comprovacions", resultats)
 
-    cv_scores = cross_validation(pipeline, X_train_augmented, y_train_augmented)
+    print("\nRealitzant Cross-Validation amb el conjunt augmentat...")
+    cv_scores = cross_validation(pipeline_augmentat, X_train_augmented, y_train_augmented)
     
-    resultats["Random Forest Comprovacions"]["cross_val_scores"] = cv_scores.tolist()
-    resultats["Random Forest Comprovacions"]["cross_val_mean"] = np.mean(cv_scores)
+    resultats["Random Forest CV amb augmentació"]["cross_val_scores"] = cv_scores.tolist()
+    resultats["Random Forest CV amb augmentació"]["cross_val_mean"] = np.mean(cv_scores)
 
     # Guarda els resultats al fitxer JSON
     guardar_resultats_a_json(resultats)
