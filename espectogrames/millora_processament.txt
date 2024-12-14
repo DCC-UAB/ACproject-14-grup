@@ -3,11 +3,11 @@ accuracy max original: 0.5
 1: dividir espectograma en vectors : accuracy max=0.56
 2: normalitzar de forma diferent: funciona molt pitjor torna a 0.5
 3: extreure caracteristiques de frequencia: accuracy max = 0.48
-4: augmentar dades: accuracy max = 0.73
+4: augmentar dades: accuracy max = 0.73 --> mentidaaa està mal fet
 5: reduir dimensionalitat:  depen quin model empitjora/millora
 6: fer escala de grisos logaritmica: empitjora poquet, pero es pitjor
 
-Guanyador-> augment de dades sol max accuracy: 0.86
+Guanyador-> augment de dades sol max accuracy: 0.86  ---> mentida, els testos estaven amb imatges falses -> no es vàlid
 
 Finalment aplicar grid search i cross validation i pca
 
@@ -17,8 +17,16 @@ MODELS DESCARTATS:
 - Cross Gradient booster (XGB), triga més de 30min
 - XGBR 
 
-TOP 3:
-- 
-- 
-- 
+AGAIN accuracy màxima:
+
+original: logistic regression amb 0.53 i rf amb 0.435
+
+augment imatges: logistic regression amb 0.53 i rf amb 0.48
+
+extracció característiques audio: 
+
+
+
+
+ 
 

@@ -1,0 +1,70 @@
+{
+    "Naive Bayes (BernoulliNB)": {
+        "accuracy": 0.28,
+        "precision": 0.27076,
+        "recall": 0.28,
+        "f1_score": 0.24815,
+        "roc_auc": 0.69538,
+        "temps_predict": 0.12478
+    },
+    "Naive Bayes (GaussianNB)": {
+        "accuracy": 0.36,
+        "precision": 0.4062,
+        "recall": 0.36,
+        "f1_score": 0.35175,
+        "roc_auc": 0.67343,
+        "temps_predict": 0.33897
+    },
+    "Naive Bayes (MultinomialNB)": {
+        "accuracy": 0.37,
+        "precision": 0.47785,
+        "recall": 0.37,
+        "f1_score": 0.36061,
+        "roc_auc": 0.76508,
+        "temps_predict": 0.04373
+    },
+    "Logistic Regression": {
+        "accuracy": 0.53,
+        "precision": 0.55141,
+        "recall": 0.53,
+        "f1_score": 0.53404,
+        "roc_auc": 0.8755,
+        "temps_predict": 0.05711
+    },
+    "K-Nearest Neighbors": {
+        "accuracy": 0.28,
+        "precision": 0.19131,
+        "recall": 0.28,
+        "f1_score": 0.21144,
+        "roc_auc": 0.7375,
+        "temps_predict": 0.44463
+    },
+    "Decision Tree": {
+        "accuracy": 0.28,
+        "precision": 0.29339,
+        "recall": 0.28,
+        "f1_score": 0.28025,
+        "roc_auc": 0.6,
+        "temps_predict": 0.0707
+    },
+    "Support Vector Machine (SVM)": {
+        "Error": "Entrenament interromput despr\u00e9s de 6.0 minuts."
+    },
+    "Random Forest": {
+        "accuracy": 0.435,
+        "precision": 0.43706,
+        "recall": 0.435,
+        "f1_score": 0.43489,
+        "roc_auc": 0.84088,
+        "temps_predict": 0.3759
+    },
+    "Gradient Boosting": {
+        "Error": "Entrenament interromput despr\u00e9s de 6.0 minuts."
+    },
+    "XGBoost (XGB)": {
+        "Error": "Entrenament interromput despr\u00e9s de 6.0 minuts."
+    },
+    "XGBoost (XGBRF)": {
+        "Error": "Entrenament interromput despr\u00e9s de 6.0 minuts."
+    }
+}

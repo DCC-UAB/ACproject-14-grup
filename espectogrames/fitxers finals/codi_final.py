@@ -237,7 +237,7 @@ if __name__ == "__main__":
 
     print("\n[INFO] Dividint dataset en conjunt train i test...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
-    """
+
     print("\n[INFO] Aplicant augmentació només al conjunt d'entrenament...")
     augmented_data, augmented_labels = [], []
     for i in range(len(X_train)):
@@ -250,7 +250,7 @@ if __name__ == "__main__":
 
     X_train_augmented = pd.DataFrame(augmented_data)
     y_train_augmented = pd.Series(augmented_labels)
-    """
+
     print("\n[INFO] Entrenant els models...")
     for model, title in models:
         print(f"\n[INFO] Començant l'entrenament per al model {title}...")
