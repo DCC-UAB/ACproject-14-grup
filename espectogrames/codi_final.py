@@ -20,7 +20,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from xgboost import XGBClassifier, XGBRFClassifier
-from multiprocessing import Process
+import threading
 
 def augment_image(image):
     flipped = np.fliplr(image)
@@ -116,53 +116,73 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["temps_predict"]=predict_time
     resultats[title]["temps_total"]=total_time
 
-# Entrenar el model
-def entrenar_model(model, X_train, y_train):
-    model.fit(X_train, y_train)
 
 def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, resultats, timeout=360):
     """
-    Avaluar un model amb diverses mètriques i interrompre si supera el temps límit (timeout).
+    Entrena i avalua un model amb control de temps. Si el model supera el temps límit (timeout),
+    l'entrenament s'interromp.
     """
     if title not in resultats:
         resultats[title] = {}
 
-    process = Process(target=entrenar_model, args=(model, X_train, y_train))
-    process.start()
+    def entrenar_model():
+        """
+        Funció per ajustar el model en un thread separat.
+        """
+        print(f"[INFO] Entrenant el model {title}...")
+        try:
+            model.fit(X_train, y_train)
+            print(f"[SUCCESS] Model {title} entrenat correctament!")
+        except Exception as e:
+            print(f"[ERROR] Entrenament del model {title} fallat: {str(e)}")
+            resultats[title]["Error"] = f"Error durant l'entrenament: {str(e)}"
+            raise
 
-    # Supervisar el temps
-    process.join(timeout)
-    if process.is_alive():
-        print(f"Model {title} interromput després de {timeout / 60:.1f} minuts.")
-        process.terminate()
-        process.join()
+    # Crear un thread per entrenar el model
+    print(f"[INFO] Iniciant el thread d'entrenament per al model {title}...")
+    training_thread = threading.Thread(target=entrenar_model)
+    training_thread.start()
+
+    # Esperar que el thread acabi dins del temps límit
+    training_thread.join(timeout)
+    if training_thread.is_alive():
+        print(f"[TIMEOUT] Model {title} interromput després de {timeout / 60:.1f} minuts.")
         resultats[title]["Error"] = f"Entrenament interromput després de {timeout / 60:.1f} minuts."
-        return  # Surt de la funció si l'entrenament es cancel·la
+        return  # Interrompre si s'excedeix el temps
 
-    # Continuar amb l'avaluació si el model s'ha entrenat correctament
-    start_predict = time.time()
-    preds = model.predict(X_test)
-    predict_time = round(time.time() - start_predict, 5)
+    # Si l'entrenament acaba, continuar amb l'avaluació
+    print(f"[INFO] Avaluant el model {title}...")
+    try:
+        start_predict = time.time()
+        preds = model.predict(X_test)
+        predict_time = round(time.time() - start_predict, 5)
+        print(f"[SUCCESS] Prediccions fetes pel model {title}!")
 
-    # Calcular mètriques per al test
-    accuracy_test = round(accuracy_score(y_test, preds), 5)
-    precision_test = round(precision_score(y_test, preds, average="weighted", zero_division=0), 5)
-    recall_test = round(recall_score(y_test, preds, average="weighted", zero_division=0), 5)
-    f1_test = round(f1_score(y_test, preds, average="weighted", zero_division=0), 5)
-    
-    if len(np.unique(y_test)) > 1 and hasattr(model, "predict_proba"):
-        roc_auc_test = round(roc_auc_score(y_test, model.predict_proba(X_test), multi_class="ovr"), 5)
-    else:
-        roc_auc_test = None
+        # Calcular mètriques
+        accuracy_test = round(accuracy_score(y_test, preds), 5)
+        precision_test = round(precision_score(y_test, preds, average="weighted", zero_division=0), 5)
+        recall_test = round(recall_score(y_test, preds, average="weighted", zero_division=0), 5)
+        f1_test = round(f1_score(y_test, preds, average="weighted", zero_division=0), 5)
 
-    # Afegir mètriques al diccionari
-    resultats[title]["accuracy"] = accuracy_test
-    resultats[title]["precision"] = precision_test
-    resultats[title]["recall"] = recall_test
-    resultats[title]["f1_score"] = f1_test
-    if roc_auc_test is not None:
-        resultats[title]["roc_auc"] = roc_auc_test
-    resultats[title]["temps_predict"] = predict_time
+        if len(np.unique(y_test)) > 1 and hasattr(model, "predict_proba"):
+            roc_auc_test = round(roc_auc_score(y_test, model.predict_proba(X_test), multi_class="ovr"), 5)
+        else:
+            roc_auc_test = None
+
+        # Desa els resultats
+        resultats[title]["accuracy"] = accuracy_test
+        resultats[title]["precision"] = precision_test
+        resultats[title]["recall"] = recall_test
+        resultats[title]["f1_score"] = f1_test
+        if roc_auc_test is not None:
+            resultats[title]["roc_auc"] = roc_auc_test
+        resultats[title]["temps_predict"] = predict_time
+        print(f"[SUCCESS] Mètriques calculades per al model {title}!")
+
+    except Exception as e:
+        print(f"[ERROR] Avaluació del model {title} fallada: {str(e)}")
+        resultats[title]["Error"] = f"Error durant l'avaluació: {str(e)}"
+
 
 def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Comp2_totsmodels_timer.json"):
     """
@@ -194,8 +214,10 @@ if __name__ == "__main__":
               (XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGBRF)")] 
    
     data, labels = [], []
+    print("[INFO] Processant dades...")
     processament(data, labels, img_size=(128,128))
     
+    print("[INFO] Codificant etiquetes i normalitzant dades...")
     data = pd.DataFrame(data)
     data["label"] = labels
 
@@ -213,11 +235,10 @@ if __name__ == "__main__":
         resultats["Random Forest CV sense augmentació"]["cross_val_mean"] = np.mean(cv_scores)
    """
 
-    print("\nDividint dataset en conjunt train i test...")
+    print("\n[INFO] Dividint dataset en conjunt train i test...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
     
-    # Aplicar augmentació només al conjunt d’entrenament
-    print("\nAplicant augmentació al conjunt d'entrenament...")
+    print("\n[INFO] Aplicant augmentació només al conjunt d'entrenament...")
     augmented_data, augmented_labels = [], []
     for i in range(len(X_train)):
         img = X_train.iloc[i].values.reshape(128, 128)  # Reconstrueix la imatge 2D
@@ -230,46 +251,11 @@ if __name__ == "__main__":
     X_train_augmented = pd.DataFrame(augmented_data)
     y_train_augmented = pd.Series(augmented_labels)
 
-
-    # Entrenar el model Random Forest
-    print("\nEntrenant els models...")
+    print("\n[INFO] Entrenant els models...")
     for model, title in models:
-        print(f"\nModel: {title}")
+        print(f"\n[INFO] Començant l'entrenament per al model {title}...")
+        model_assess_to_json_timer(model, X_train_augmented, X_test, y_train_augmented, y_test, title, resultats)
 
-        try:
-            # **Prova amb scaler i PCA**
-            scaler = MinMaxScaler()
-            X_train_scaled = scaler.fit_transform(X_train_augmented)
-            X_test_scaled = scaler.transform(X_test)
-
-            pca = PCA(n_components=100)
-            X_train_pca = pca.fit_transform(X_train_scaled)
-            X_test_pca = pca.transform(X_test_scaled)
-
-            pipeline_augmentat = Pipeline([
-                ('model', model)
-            ])
-
-            # Entrenar i avaluar amb control de temps
-            model_assess_to_json_timer(pipeline_augmentat, X_train_pca, X_test_pca, y_train_augmented, y_test, title, resultats)
-
-        except Exception as e:
-            print(f"Error amb scaler i PCA per al model {title}: {e}")
-            print(f"Reintentant sense scaler ni PCA per al model {title}...")
-
-            # **Prova sense scaler ni PCA**
-            pipeline_augmentat = Pipeline([
-                ('model', model)
-            ])
-
-            try:
-                # Entrenar i avaluar només amb el model i dades originals
-                model_assess_to_json_timer(pipeline_augmentat, X_train_augmented, X_test, y_train_augmented, y_test, title + " (sense scaler ni PCA)", resultats)
-
-            except Exception as e:
-                print(f"Error final per al model {title}: {e}")
-                resultats[title] = {"Error": f"Model no ha pogut ser entrenat ni sense scaler ni PCA."}
-                continue
-            
-    # Guarda els resultats al fitxer JSON
+    print("\n[INFO] Guardant els resultats al fitxer JSON...")
     guardar_resultats_a_json(resultats)
+    print("[SUCCESS] Resultats guardats correctament!")
