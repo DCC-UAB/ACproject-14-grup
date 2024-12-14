@@ -116,6 +116,10 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["temps_predict"]=predict_time
     resultats[title]["temps_total"]=total_time
 
+# Entrenar el model
+def entrenar_model(model, X_train, y_train):
+    model.fit(X_train, y_train)
+
 def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, resultats, timeout=360):
     """
     Avaluar un model amb diverses mètriques i interrompre si supera el temps límit (timeout).
@@ -123,11 +127,7 @@ def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, r
     if title not in resultats:
         resultats[title] = {}
 
-    # Entrenar el model amb multiprocessing i timeout
-    def entrenar_model():
-        model.fit(X_train, y_train)
-
-    process = Process(target=entrenar_model)
+    process = Process(target=entrenar_model, args=(model, X_train, y_train))
     process.start()
 
     # Supervisar el temps
@@ -164,7 +164,7 @@ def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, r
         resultats[title]["roc_auc"] = roc_auc_test
     resultats[title]["temps_predict"] = predict_time
 
-def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Comp1.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="resultats_Comp2_totsmodels_timer.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
