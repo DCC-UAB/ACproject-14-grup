@@ -21,6 +21,37 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from xgboost import XGBClassifier, XGBRFClassifier
 import threading
+import librosa
+import librosa.display
+
+def extract_audio_features(img_path):
+    """
+    Extreu característiques avançades d'àudio d'un espectrograma.
+    """
+    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        return None
+    img_resized = cv2.resize(img, (128, 128)) / 255.0  # Normalitzar
+    S = librosa.feature.melspectrogram(S=img_resized, sr=22050)  # Convertir espectrograma mel
+    features = []
+
+    # MFCC
+    mfcc = librosa.feature.mfcc(S=librosa.power_to_db(S), n_mfcc=13)
+    features.extend(mfcc.flatten())
+
+    # Zero Crossing Rate
+    zcr = librosa.feature.zero_crossing_rate(S)
+    features.extend(zcr.flatten())
+
+    # Spectral Contrast
+    contrast = librosa.feature.spectral_contrast(S=S, sr=22050)
+    features.extend(contrast.flatten())
+
+    # Chroma
+    chroma = librosa.feature.chroma_stft(S=S, sr=22050)
+    features.extend(chroma.flatten())
+
+    return features
 
 def augment_image(image):
     flipped = np.fliplr(image)
@@ -38,8 +69,10 @@ def processament(data, labels, img_size=(128,128)):
                 img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                 if img is not None:
                     img_resized = cv2.resize(img, img_size) / 255.0
-                    data.append(img_resized.flatten())
-                    labels.append(genre)
+                    features = extract_audio_features(img_resized)
+                    if features is not None:
+                        data.append(img_resized.flatten())
+                        labels.append(genre)
         
 
 def codificar_label(data):
@@ -214,7 +247,7 @@ if __name__ == "__main__":
               (XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGBRF)")] 
    
     data, labels = [], []
-    print("[INFO] Processant dades...")
+    print("[INFO] Processant dades i extraient característiques d'audio...")
     processament(data, labels, img_size=(128,128))
     
     print("[INFO] Codificant etiquetes i normalitzant dades...")
@@ -238,6 +271,7 @@ if __name__ == "__main__":
     print("\n[INFO] Dividint dataset en conjunt train i test...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
 
+    """
     print("\n[INFO] Aplicant augmentació només al conjunt d'entrenament...")
     augmented_data, augmented_labels = [], []
     for i in range(len(X_train)):
@@ -250,7 +284,8 @@ if __name__ == "__main__":
 
     X_train_augmented = pd.DataFrame(augmented_data)
     y_train_augmented = pd.Series(augmented_labels)
-
+    """
+    
     print("\n[INFO] Entrenant els models...")
     for model, title in models:
         print(f"\n[INFO] Començant l'entrenament per al model {title}...")
