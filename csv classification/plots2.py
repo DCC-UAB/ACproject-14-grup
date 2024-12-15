@@ -1,9 +1,14 @@
 import json
+from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 
 # Carregar resultats des del JSON
-nom_fitxer_json = "resultats.json"
+
+current_dir = Path(__file__).parent.resolve()
+
+# Carregar el JSON principal (dataset sencer)
+nom_fitxer_json = current_dir / "resultats_all_models.json"
 
 with open(nom_fitxer_json, "r") as fitxer:
     resultats = json.load(fitxer)

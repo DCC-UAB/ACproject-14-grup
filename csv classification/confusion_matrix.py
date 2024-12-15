@@ -54,15 +54,21 @@ if __name__ == "__main__":
     # Split data
     X_train, X_test, y_train, y_test = divisio_dades(X, y)
 
-    model = GradientBoostingClassifier(n_estimators=500, learning_rate=0.15, max_depth=10, min_samples_leaf=12, min_samples_split=2)
+    models_top = [
+        (RandomForestClassifier(n_estimators=500, max_depth=None, min_samples_split=2, min_samples_leaf=1, max_features='sqrt', bootstrap=False), "Random Forest"), 
+        (GradientBoostingClassifier(n_estimators=500, learning_rate=0.15, max_depth=10, min_samples_leaf=12, min_samples_split=2), "Gradient Boosting"), 
+        (XGBClassifier(colsample_bytree=0.85, learning_rate=0.075, max_depth=5, n_estimators=1500, subsample=0.8, tree_method='hist', random_state=42), "Cross Gradient Booster")
+    ]
 
-    model.fit(X_train, y_train)
-    preds = model.predict(X_test)
 
-    confusion_matr = confusion_matrix(y_test, preds) #normalize = 'true'
-    plt.figure(figsize = (16, 9))
-    sns.heatmap(confusion_matr, cmap="Blues", annot=True, 
-                xticklabels = ["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"],
-            yticklabels=["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"]);
-    plt.savefig("conf matrix")
-    plt.show()
+    for model, name in models_top:
+        model.fit(X_train, y_train)
+        preds = model.predict(X_test)
+
+        confusion_matr = confusion_matrix(y_test, preds, normalize='true') # Normalize the confusion matrix
+        plt.figure(figsize = (16, 9))
+        sns.heatmap(confusion_matr, cmap="Blues", annot=True, fmt=".2%", 
+                    xticklabels = ["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"],
+                    yticklabels=["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"]);
+        plt.savefig("conf_matrix_percentage.png")
+        plt.show()

@@ -13,6 +13,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score, KFold
 from xgboost import XGBClassifier, XGBRFClassifier
+import json
 
 def codificar_label(data):
     label_encoder = preprocessing.LabelEncoder()
@@ -62,6 +63,11 @@ if __name__ == "__main__":
     # Cross validation
     kfold = KFold(n_splits=10, random_state=111, shuffle=True)
 
+    results_dict = {}
     for model, name in models_top:
         results = cross_val_score(model, X, y, cv=kfold)
-        print(f"{name} - Best Accuracy: {results.max()*100:.2f}%, Mean Accuracy: {results.mean()*100:.2f}%, Std: {results.std()*100:.2f}%")
+        results_dict[name] = results.mean()
+        print(f"Model: {name}")
+
+    with open("accuracy_top_models.json", "w") as json_file:
+        json.dump(results_dict, json_file, indent=4)
