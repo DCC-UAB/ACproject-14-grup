@@ -1,0 +1,11 @@
+{
+    "3 seconds": {
+        "Cross Gradient Booster": {
+            "title": "Cross Gradient Booster",
+            "accuracy": 0.8954,
+            "train_time": 10.941941976547241,
+            "pred_time": 0.05727744102478027
+        }
+    },
+    "30 seconds": {}
+}
