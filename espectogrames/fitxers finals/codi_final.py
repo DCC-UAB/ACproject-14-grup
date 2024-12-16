@@ -23,80 +23,7 @@ from xgboost import XGBClassifier, XGBRFClassifier
 import threading
 import librosa
 import librosa.display
-"""
-    def extract_audio_features(img_path):
-    
-    #Extreu característiques avançades d'àudio d'un espectrograma.
-    
-     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-    if img is None:
-        return None
-    img_resized = cv2.resize(img, (128, 128)) / 255.0  # Normalitzar
-    
-    # Generar el mel spectrogram
-    S = librosa.feature.melspectrogram(S=img_resized, sr=22050, n_fft=2048, hop_length=512, n_mels=64, fmax=8000)
-    db_S = librosa.power_to_db(S, ref=np.max)  # Convertir a decibels per algunes característiques
-
-    features = []
-
-    # MFCC
-    mfcc = librosa.feature.mfcc(S=db_S, n_mfcc=13)
-    features.extend(mfcc.flatten())
-
-    # Delta i Delta-Delta de MFCC
-    mfcc_delta = librosa.feature.delta(mfcc)
-    mfcc_delta2 = librosa.feature.delta(mfcc, order=2)
-    features.extend(mfcc_delta.flatten())
-    features.extend(mfcc_delta2.flatten())
-
-    # Zero Crossing Rate
-    zcr = librosa.feature.zero_crossing_rate(S)
-    features.extend(zcr.flatten())
-
-    # Spectral Contrast
-    contrast = librosa.feature.spectral_contrast(S=S, sr=22050)
-    features.extend(contrast.flatten())
-
-    # Chroma
-    chroma = librosa.feature.chroma_stft(S=S, sr=22050)
-    features.extend(chroma.flatten())
-
-    # Spectral Centroid
-    centroid = librosa.feature.spectral_centroid(S=S, sr=22050)
-    features.extend(centroid.flatten())
-
-    # Spectral Bandwidth
-    bandwidth = librosa.feature.spectral_bandwidth(S=S, sr=22050)
-    features.extend(bandwidth.flatten())
-
-    # Spectral Rolloff
-    rolloff = librosa.feature.spectral_rolloff(S=S, sr=22050, roll_percent=0.85)
-    features.extend(rolloff.flatten())
-
-    # Tonnetz
-    tonnetz = librosa.feature.tonnetz(S=librosa.feature.chroma_cqt(S=S, sr=22050), sr=22050)
-    features.extend(tonnetz.flatten())
-
-    # Spectral Flatness
-    flatness = librosa.feature.spectral_flatness(S=S)
-    features.extend(flatness.flatten())
-
-    # RMS Energy
-    rms = librosa.feature.rms(S=S)
-    features.extend(rms.flatten())
-
-    # Tempo i Beats
-    tempo, beats = librosa.beat.beat_track(S=librosa.amplitude_to_db(S), sr=22050)
-    features.append(tempo)  
-    features.extend(beats[:50]) 
-
-    # Harmonic i Percussive Components
-    harmonic, percussive = librosa.effects.hpss(S)
-    features.extend(harmonic.mean(axis=1))
-    features.extend(percussive.mean(axis=1))
-
-    return features
-"""
+from skimage.feature import hog
 
 def augment_image(image):
     flipped = np.fliplr(image)
@@ -113,12 +40,12 @@ def processament(data, labels, img_size=(128,128)):
                 img_path = os.path.join(genre_path, img_file)
                 img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                 if img is not None:
-                    img_resized = cv2.resize(img, img_size) / 255.0
-                #features = extract_audio_features(img_path)
-                #if features is not None:
-                    data.append(img_resized)
+                    img_resized = cv2.resize(img, img_size)
+                    features, _ = hog(img_resized, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(2, 2), visualize=True)
+                    data.append(features)
                     labels.append(genre)
-        
+            
+
 
 def codificar_label(data):
     label_encoder = preprocessing.LabelEncoder()
@@ -262,7 +189,7 @@ def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, r
         resultats[title]["Error"] = f"Error durant l'avaluació: {str(e)}"
 
 
-def guardar_resultats_a_json(resultats, nom_fitxer="totsmodels_caracteristiquesAudio.json"):
+def guardar_resultats_a_json(resultats, nom_fitxer="totsmodels_caracteristiquesAudio_plus.json"):
     """
     Guarda els resultats en un fitxer JSON.
     """
@@ -316,7 +243,7 @@ if __name__ == "__main__":
     print("\n[INFO] Dividint dataset en conjunt train i test...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
 
-    
+    """
     print("\n[INFO] Aplicant augmentació només al conjunt d'entrenament...")
     augmented_data, augmented_labels = [], []
     for i in range(len(X_train)):
@@ -329,12 +256,12 @@ if __name__ == "__main__":
 
     X_train_augmented = pd.DataFrame(augmented_data)
     y_train_augmented = pd.Series(augmented_labels)
-    
+    """
 
     print("\n[INFO] Entrenant els models...")
     for model, title in models:
         print(f"\n[INFO] Començant l'entrenament per al model {title}...")
-        model_assess_to_json_timer(model, X_train_augmented, X_test, y_train_augmented, y_test, title, resultats)
+        model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, resultats)
 
     print("\n[INFO] Guardant els resultats al fitxer JSON...")
     guardar_resultats_a_json(resultats)

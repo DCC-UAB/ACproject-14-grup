@@ -38,6 +38,10 @@
         "f1_score": 0.21144,
         "roc_auc": 0.7375,
         "temps_predict": 0.44463
+
+
+
+        
     },
     "Decision Tree": {
         "accuracy": 0.28,

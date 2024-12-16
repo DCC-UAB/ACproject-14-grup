@@ -1,0 +1,86 @@
+{
+    "Naive Bayes (BernoulliNB)": {
+        "accuracy": 0.27,
+        "precision": 0.28879,
+        "recall": 0.27,
+        "f1_score": 0.24218,
+        "roc_auc": 0.70069,
+        "temps_predict": 0.0654
+    },
+    "Naive Bayes (GaussianNB)": {
+        "accuracy": 0.315,
+        "precision": 0.32794,
+        "recall": 0.315,
+        "f1_score": 0.28777,
+        "roc_auc": 0.67929,
+        "temps_predict": 0.16723
+    },
+    "Naive Bayes (MultinomialNB)": {
+        "accuracy": 0.375,
+        "precision": 0.43299,
+        "recall": 0.375,
+        "f1_score": 0.3474,
+        "roc_auc": 0.79386,
+        "temps_predict": 0.02307
+    },
+    "Logistic Regression": {
+        "accuracy": 0.54,
+        "precision": 0.55163,
+        "recall": 0.54,
+        "f1_score": 0.53691,
+        "roc_auc": 0.89333,
+        "temps_predict": 0.02414
+        
+    },
+    "K-Nearest Neighbors": {
+        "accuracy": 0.45,
+        "precision": 0.49924,
+        "recall": 0.45,
+        "f1_score": 0.40864,
+        "roc_auc": 0.83254,
+        "temps_predict": 0.40312
+    },
+    "Decision Tree": {
+        "accuracy": 0.31,
+        "precision": 0.31451,
+        "recall": 0.31,
+        "f1_score": 0.31093,
+        "roc_auc": 0.61653,
+        "temps_predict": 0.03258
+    },
+    "Support Vector Machine (SVM)": {
+        "accuracy": 0.52,
+        "precision": 0.53481,
+        "recall": 0.52,
+        "f1_score": 0.51233,
+        "roc_auc": 0.89903,
+        "temps_predict": 1.06949
+    },
+    "Random Forest": {
+        "accuracy": 0.485,
+        "precision": 0.49452,
+        "recall": 0.485,
+        "f1_score": 0.4743,
+        "roc_auc": 0.87386,
+        "temps_predict": 0.04935
+    },
+    "Gradient Boosting": {
+        "Error": "Entrenament interromput despr\u00e9s de 6.0 minuts."
+    },
+    "XGBoost (XGB)": {
+        "accuracy": 0.515,
+        "precision": 0.51065,
+        "recall": 0.515,
+        "f1_score": 0.50812,
+        "roc_auc": 0.88167,
+        "temps_predict": 1.02955
+    },
+    "XGBoost (XGBRF)": {
+        "accuracy": 0.45,
+        "precision": 0.44878,
+        "recall": 0.45,
+        "f1_score": 0.43892,
+        "roc_auc": 0.85344,
+        "temps_predict": 0.75365
+    }
+}
