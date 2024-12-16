@@ -91,10 +91,10 @@ if __name__ == "__main__":
     print("\n[INFO] Dividint dataset en conjunt train i test...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
 
-    param_grid_lr = {"C": [0.1, 1, 10], "solver": ["liblinear", "lbfgs"]}
-    param_grid_svm = {"C": [0.1, 1, 10], "kernel": ["linear", "rbf"], "gamma": ["scale", "auto"]}
-    param_grid_xgb = {"n_estimators": [50, 100, 200], "learning_rate": [0.01, 0.1, 0.2], "max_depth": [3, 6, 9]}
-    
+    param_grid_lr = {"C": [0.01, 0.1, 1, 10], "solver": ["liblinear", "lbfgs", "saga"]}
+    param_grid_svm = {"C": [0.1, 1, 5, 10], "kernel": ["linear", "rbf"], "gamma": ["scale", "auto", 0.01]}
+    param_grid_xgb = {"n_estimators": [50, 100, 200, 300], "learning_rate": [0.01, 0.05, 0.1, 0.2], "max_depth": [3, 6, 9, 12]}
+
     models = [
         (LogisticRegression(), param_grid_lr, "Logistic Regression"),
         (SVC(probability=True), param_grid_svm, "Support Vector Machine (SVM)"),
