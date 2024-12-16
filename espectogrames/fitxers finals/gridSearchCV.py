@@ -156,7 +156,7 @@ if __name__ == "__main__":
     (RandomForestClassifier(), 
      {"n_estimators": [800, 1000, 1500], 
       "max_depth": [18, 20, 30, 35], 
-      "max_features": ["sqrt", "log2", None],
+      "max_features": ["sqrt", "log2"],
       "min_samples_split": [2, 3], 
       "min_samples_leaf": [1, 2, 3, 4]}, 
      "Random Forest")]
