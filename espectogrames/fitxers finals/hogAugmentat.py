@@ -26,6 +26,8 @@ import librosa.display
 from skimage.feature import hog
 
 def augment_image(image):
+    # image és un array 2D (128x128)
+    # Afegim augmentacions simples
     flipped = np.fliplr(image)
     noisy = np.clip(image + np.random.normal(0, 0.02, image.shape), 0, 1)  
     brighter = np.clip(image * 1.2, 0, 1)
@@ -33,6 +35,7 @@ def augment_image(image):
     return [image, flipped, noisy, brighter, darker]
 
 def processament(data, labels, img_size=(128,128)):
+    # Aquesta funció només llegeix i redimensiona les imatges, sense aplicar HOG ni augmentació.
     for genre in os.listdir(base_dir):
         genre_path = os.path.join(base_dir, genre)
         if os.path.isdir(genre_path):
@@ -41,25 +44,25 @@ def processament(data, labels, img_size=(128,128)):
                 img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                 if img is not None:
                     img_resized = cv2.resize(img, img_size)
-                    features, _ = hog(img_resized, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(2, 2), visualize=True)
-                    data.append(features)
+                    # Guardem la imatge normalitzada entre 0 i 1
+                    img_resized = img_resized.astype("float32")/255.0
+                    data.append(img_resized)
                     labels.append(genre)
-            
-
 
 def codificar_label(data):
     label_encoder = preprocessing.LabelEncoder()
     data['label'] = label_encoder.fit_transform(data['label'])
     return data, label_encoder
 
-def definirXY_normalitzar(data):
-    X = data.drop(['label'],axis=1)
-    y = data['label'] #variable independent (a predir)
-    columnes = X.columns
-    min_max_scaler = MinMaxScaler()
-    np_scaled = min_max_scaler.fit_transform(X) #escalem 
-    X = pd.DataFrame(np_scaled, columns=columnes)#nou dataset sense label i filename
-    return X, y
+def definirXY_normalitzar_hog(X, train=True, scaler=None):
+    # Aquesta funció rep un array de vectors HOG i els normalitza amb MinMaxScaler
+    if train:
+        scaler = MinMaxScaler()
+        X_scaled = scaler.fit_transform(X)
+        return X_scaled, scaler
+    else:
+        X_scaled = scaler.transform(X)
+        return X_scaled
 
 def cross_validation(model, X, y):
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
@@ -67,11 +70,7 @@ def cross_validation(model, X, y):
     print(f"Accuracy mitjà amb cross-validation: {np.mean(scores):.4f}")
     return scores
 
-
 def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resultats):
-    """
-    Avaluar un model amb diverses mètriques i guardar els resultats en un diccionari.
-    """
     if title not in resultats:
         resultats[title] = {}
 
@@ -107,7 +106,6 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     accuracy_gap = round(accuracy_train - accuracy_test, 5)
     f1_gap = round(f1_train - f1_test, 5)
 
-
     # Afegir mètriques al diccionari
     resultats[title]["accuracy"]=accuracy_test
     resultats[title]["precision"]=precision_test
@@ -121,19 +119,11 @@ def model_assess_to_json(model, X_train, X_test, y_train, y_test, title, resulta
     resultats[title]["temps_predict"]=predict_time
     resultats[title]["temps_total"]=total_time
 
-
-def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, resultats, timeout=360):
-    """
-    Entrena i avalua un model amb control de temps. Si el model supera el temps límit (timeout),
-    l'entrenament s'interromp.
-    """
+def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, resultats, timeout=900):
     if title not in resultats:
         resultats[title] = {}
 
     def entrenar_model():
-        """
-        Funció per ajustar el model en un thread separat.
-        """
         print(f"[INFO] Entrenant el model {title}...")
         try:
             model.fit(X_train, y_train)
@@ -143,19 +133,16 @@ def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, r
             resultats[title]["Error"] = f"Error durant l'entrenament: {str(e)}"
             raise
 
-    # Crear un thread per entrenar el model
     print(f"[INFO] Iniciant el thread d'entrenament per al model {title}...")
     training_thread = threading.Thread(target=entrenar_model)
     training_thread.start()
 
-    # Esperar que el thread acabi dins del temps límit
     training_thread.join(timeout)
     if training_thread.is_alive():
         print(f"[TIMEOUT] Model {title} interromput després de {timeout / 60:.1f} minuts.")
         resultats[title]["Error"] = f"Entrenament interromput després de {timeout / 60:.1f} minuts."
-        return  # Interrompre si s'excedeix el temps
+        return
 
-    # Si l'entrenament acaba, continuar amb l'avaluació
     print(f"[INFO] Avaluant el model {title}...")
     try:
         start_predict = time.time()
@@ -188,80 +175,78 @@ def model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, r
         print(f"[ERROR] Avaluació del model {title} fallada: {str(e)}")
         resultats[title]["Error"] = f"Error durant l'avaluació: {str(e)}"
 
-
-def guardar_resultats_a_json(resultats, nom_fitxer="totsmodels_caracteristiquesAudio_plus.json"):
-    """
-    Guarda els resultats en un fitxer JSON.
-    """
+def guardar_resultats_a_json(resultats, nom_fitxer="bestModels_augment.json"):
     current_dir = Path(r"C:/Users/carlo/Desktop/uni/AC/Projecte AC/ACproject-14-grup/espectogrames/jasond")
-    
     fitxer_json = current_dir / nom_fitxer  # Camí complet al fitxer JSON
 
     with open(nom_fitxer, "w") as fitxer:
         json.dump(resultats, fitxer, indent=4)
     print(f"Resultats guardats a {fitxer_json}")
 
-
 if __name__ == "__main__":
     base_dir = "ACproject-14-grup/datasets/Data1/images_original"
     resultats = {}   
 
-    models = [(BernoulliNB(), "Naive Bayes (BernoulliNB)"),
-              (GaussianNB(), "Naive Bayes (GaussianNB)"),
-              (MultinomialNB(), "Naive Bayes (MultinomialNB)"),
-              (LogisticRegression(max_iter=1000, random_state=42), "Logistic Regression"),
-              (KNeighborsClassifier(n_neighbors=7), "K-Nearest Neighbors"),
-              (DecisionTreeClassifier(random_state=42), "Decision Tree"),
-              (SVC(kernel="rbf", probability=True, random_state=42), "Support Vector Machine (SVM)"),
-              (RandomForestClassifier(n_estimators=100, random_state=42), "Random Forest"),
-              (GradientBoostingClassifier(random_state=42), "Gradient Boosting"),
-              (XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGB)"),
-              (XGBRFClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42), "XGBoost (XGBRF)")] 
-   
+    models = [
+        (LogisticRegression(max_iter=1000, random_state=42, C=1, solver="saga"), "Logistic Regression"),
+        (SVC(kernel="rbf", probability=True, random_state=42, C=5, gamma="scale"), "Support Vector Machine (SVM)"),
+        (XGBClassifier(use_label_encoder=False, eval_metric="logloss", random_state=42, learning_rate=0.1, max_depth=9, n_estimators=300), "XGBoost (XGB)")
+    ]
+
     data, labels = [], []
-    print("[INFO] Processant dades i extraient característiques d'audio...")
+    print("[INFO] Processant dades i extraient imatges...")
     processament(data, labels, img_size=(128,128))
     
-    print("[INFO] Codificant etiquetes i normalitzant dades...")
-    data = pd.DataFrame(data)
-    data["label"] = labels
-
+    print("[INFO] Codificant etiquetes...")
+    data = pd.DataFrame({'image': data, 'label': labels})
     data, label_encoder = codificar_label(data)
-    X, y = definirXY_normalitzar(data)
 
-    """
-    # Cross-Validation sobre el dataset original (sense augmentació)
-    print("\nRealitzant Cross-Validation sobre el dataset original...")
-    for model, title in models:
-        print(f"\nModel: {title}")
-    
-        cv_scores = cross_validation(model, X, y)
-        resultats["Random Forest CV sense augmentació"]["cross_val_scores"] = cv_scores.tolist()
-        resultats["Random Forest CV sense augmentació"]["cross_val_mean"] = np.mean(cv_scores)
-   """
+    print("[INFO] Dividint dataset en conjunt train i test...")
+    X = np.array(data['image'].tolist())
+    y = data['label'].values
+    X_train_imgs, X_test_imgs, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
 
-    print("\n[INFO] Dividint dataset en conjunt train i test...")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
-
-    """
     print("\n[INFO] Aplicant augmentació només al conjunt d'entrenament...")
-    augmented_data, augmented_labels = [], []
-    for i in range(len(X_train)):
-        img = X_train.iloc[i].values.reshape(128, 128)  # Reconstrueix la imatge 2D
-        genre = y_train.iloc[i]
-        augmented_images = augment_image(img)  
-        for aug_img in augmented_images:
-            augmented_data.append(aug_img.flatten())
+    augmented_images = []
+    augmented_labels = []
+    for i in range(len(X_train_imgs)):
+        img = X_train_imgs[i]  # imatge original (128x128)
+        genre = y_train[i]
+        imgs_aug = augment_image(img)
+        for aug_img in imgs_aug:
+            augmented_images.append(aug_img)
             augmented_labels.append(genre)
 
-    X_train_augmented = pd.DataFrame(augmented_data)
-    y_train_augmented = pd.Series(augmented_labels)
-    """
+    # Convertim a arrays numpy
+    augmented_images = np.array(augmented_images)
+    augmented_labels = np.array(augmented_labels)
+
+    # Ara apliquem HOG a tot el training set (augmented + original) i al test
+    print("[INFO] Extreient característiques HOG...")
+
+    def extract_hog_features(images):
+        hog_features = []
+        for im in images:
+            # im és 128x128
+            features = hog(im, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(2, 2), visualize=False)
+            hog_features.append(features)
+        return np.array(hog_features)
+
+    X_train_hog = extract_hog_features(augmented_images)
+    X_test_hog = extract_hog_features(X_test_imgs)
+
+    # Normalització dels HOG
+    print("[INFO] Normalitzant característiques...")
+    X_train_scaled, scaler = definirXY_normalitzar_hog(X_train_hog, train=True)
+    X_test_scaled = definirXY_normalitzar_hog(X_test_hog, train=False, scaler=scaler)
+
+    y_train_final = augmented_labels
+    y_test_final = y_test
 
     print("\n[INFO] Entrenant els models...")
     for model, title in models:
         print(f"\n[INFO] Començant l'entrenament per al model {title}...")
-        model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, resultats)
+        model_assess_to_json_timer(model, X_train_scaled, X_test_scaled, y_train_final, y_test_final, title, resultats)
 
     print("\n[INFO] Guardant els resultats al fitxer JSON...")
     guardar_resultats_a_json(resultats)
