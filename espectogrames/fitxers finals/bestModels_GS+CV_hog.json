@@ -32,7 +32,7 @@
         "cross_val_mean": 0.563572864321608,
         "test_accuracy": 0.6
     },
-    "XGBoost": {
+    "XGBoost (XGB)": {
         "best_params": {
             "learning_rate": 0.1,
             "max_depth": 9,

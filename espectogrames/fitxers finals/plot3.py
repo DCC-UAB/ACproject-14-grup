@@ -11,7 +11,7 @@ def generar_comparacio_models(resultats_sense_gs, resultats_amb_gs):
     """
     Genera comparacions visuals per als 3 millors models amb i sense Grid Search.
     """
-    models = ["Logistic Regression", "Support Vector Machine (SVM)", "XGBoost"]
+    models = ["Logistic Regression", "Support Vector Machine (SVM)", "XGBoost (XGB)"]
     
     # Valors sense Grid Search (només els 3 millors models)
     accuracy_sense_gs = [resultats_sense_gs.get(model, {}).get("accuracy", 0) for model in models]
@@ -56,6 +56,7 @@ if __name__ == "__main__":
     fitxer_sense_gs = "C:/Users/carlo/Desktop/uni/AC/Projecte AC/ACproject-14-grup/espectogrames/fitxers finals/totsmodels_hogFeatures.json"
     fitxer_amb_gs = "C:/Users/carlo/Desktop/uni/AC/Projecte AC/ACproject-14-grup/espectogrames/fitxers finals/bestModels_GS+CV_hog.json"     # Resultats amb Grid Search i Cross Validation
     
+
     # Carregar resultats
     print("[INFO] Carregant resultats...")
     resultats_sense_gs = carregar_resultats(fitxer_sense_gs)
