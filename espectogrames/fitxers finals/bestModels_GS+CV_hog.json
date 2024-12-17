@@ -1,0 +1,52 @@
+{
+    "Logistic Regression": {
+        "best_params": {
+            "C": 1,
+            "solver": "saga"
+        },
+        "best_accuracy": 0.5481839622641509,
+        "cross_val_scores": [
+            0.595,
+            0.505,
+            0.56,
+            0.55,
+            0.5527638190954773
+        ],
+        "cross_val_mean": 0.5525527638190955,
+        "test_accuracy": 0.555
+    },
+    "Support Vector Machine (SVM)": {
+        "best_params": {
+            "C": 5,
+            "gamma": "scale",
+            "kernel": "rbf"
+        },
+        "best_accuracy": 0.565683962264151,
+        "cross_val_scores": [
+            0.585,
+            0.545,
+            0.52,
+            0.595,
+            0.5728643216080402
+        ],
+        "cross_val_mean": 0.563572864321608,
+        "test_accuracy": 0.6
+    },
+    "XGBoost": {
+        "best_params": {
+            "learning_rate": 0.1,
+            "max_depth": 9,
+            "n_estimators": 300
+        },
+        "best_accuracy": 0.5019025157232704,
+        "cross_val_scores": [
+            0.535,
+            0.52,
+            0.49,
+            0.56,
+            0.507537688442211
+        ],
+        "cross_val_mean": 0.5225075376884423,
+        "test_accuracy": 0.525
+    }
+}
