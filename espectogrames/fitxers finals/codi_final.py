@@ -229,21 +229,10 @@ if __name__ == "__main__":
     data, label_encoder = codificar_label(data)
     X, y = definirXY_normalitzar(data)
 
-    """
-    # Cross-Validation sobre el dataset original (sense augmentació)
-    print("\nRealitzant Cross-Validation sobre el dataset original...")
-    for model, title in models:
-        print(f"\nModel: {title}")
-    
-        cv_scores = cross_validation(model, X, y)
-        resultats["Random Forest CV sense augmentació"]["cross_val_scores"] = cv_scores.tolist()
-        resultats["Random Forest CV sense augmentació"]["cross_val_mean"] = np.mean(cv_scores)
-   """
-
     print("\n[INFO] Dividint dataset en conjunt train i test...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111, stratify=y)
 
-    """
+    
     print("\n[INFO] Aplicant augmentació només al conjunt d'entrenament...")
     augmented_data, augmented_labels = [], []
     for i in range(len(X_train)):
@@ -256,12 +245,12 @@ if __name__ == "__main__":
 
     X_train_augmented = pd.DataFrame(augmented_data)
     y_train_augmented = pd.Series(augmented_labels)
-    """
+    
 
     print("\n[INFO] Entrenant els models...")
     for model, title in models:
         print(f"\n[INFO] Començant l'entrenament per al model {title}...")
-        model_assess_to_json_timer(model, X_train, X_test, y_train, y_test, title, resultats)
+        model_assess_to_json_timer(model, X_train_augmented, X_test, y_train_augmented, y_test, title, resultats)
 
     print("\n[INFO] Guardant els resultats al fitxer JSON...")
     guardar_resultats_a_json(resultats)
