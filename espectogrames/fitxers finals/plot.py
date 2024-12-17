@@ -1,6 +1,7 @@
 import json
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 def carregar_resultats(nom_fitxer):
     """
@@ -10,10 +11,20 @@ def carregar_resultats(nom_fitxer):
         resultats = json.load(fitxer)
     return resultats
 
+def guardar_plot(nom_directori, nom_fitxer):
+    """
+    Guarda el plot actual al directori especificat.
+    """
+    if not os.path.exists(nom_directori):
+        os.makedirs(nom_directori)  # Crear el directori si no existeix
+    plt.savefig(os.path.join(nom_directori, nom_fitxer), bbox_inches='tight')
+    print(f"[INFO] Guardant plot a {os.path.join(nom_directori, nom_fitxer)}")
+
 def generar_plots(resultats):
     """
-    Genera comparacions visuals dels resultats.
+    Genera comparacions visuals dels resultats i guarda els plots.
     """
+    nom_directori_plots = "output_plots"
     models = list(resultats.keys())
     accuracies = [resultats[model].get("test_accuracy", 0) for model in models]
     cross_val_means = [resultats[model].get("cross_val_mean", 0) for model in models]
@@ -30,6 +41,7 @@ def generar_plots(resultats):
     plt.title("Comparació d'Accuracy: Test vs Cross-Validation")
     plt.legend()
     plt.tight_layout()
+    guardar_plot(nom_directori_plots, "comparacio_test_vs_cross_validation.png")
     plt.show()
 
     # Comparació de millors scores trobats per Grid Search
@@ -39,12 +51,14 @@ def generar_plots(resultats):
     plt.ylabel("Best Accuracy")
     plt.title("Millors Scores trobats per Grid Search")
     plt.tight_layout()
+    guardar_plot(nom_directori_plots, "best_scores_grid_search.png")
     plt.show()
 
 if __name__ == "__main__":
     nom_fitxer = "bestModels_GS+CV_hog.json" 
     print(f"[INFO] Carregant resultats de {nom_fitxer}...")
-    resultats = carregar_resultats(nom_fitxer)
+    resultats = carregar_resultats("C:/Users/carlo/Desktop/uni/AC/Projecte AC/ACproject-14-grup/espectogrames/fitxers finals/bestModels_GS+CV_hog.json"
+)
 
-    print("[INFO] Generant plots de comparació...")
+    print("[INFO] Generant plots de comparació i guardant-los...")
     generar_plots(resultats)
