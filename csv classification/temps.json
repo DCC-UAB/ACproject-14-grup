@@ -1,0 +1,86 @@
+{
+    "3 seconds": {
+        "Gaussian Naive Bayes": {
+            "training_time": 0.01087,
+            "evaluation_time": 0.00518
+        },
+        "Bernoulli Naive Bayes": {
+            "training_time": 0.00998,
+            "evaluation_time": 0.0032
+        },
+        "Multinomial Naive Bayes": {
+            "training_time": 0.01091,
+            "evaluation_time": 0.00229
+        },
+        "Support Vector Machine": {
+            "training_time": 1.36565,
+            "evaluation_time": 0.95623
+        },
+        "K-Nearest Neighbors": {
+            "training_time": 0.00527,
+            "evaluation_time": 0.2287
+        },
+        "Decision Trees": {
+            "training_time": 0.74766,
+            "evaluation_time": 0.00194
+        },
+        "Random Forest": {
+            "training_time": 41.32701,
+            "evaluation_time": 0.1972
+        },
+        "Gradient Boosting": {
+            "training_time": 152.48164,
+            "evaluation_time": 0.03442
+        },
+        "Cross Gradient Booster": {
+            "training_time": 27.53346,
+            "evaluation_time": 0.06921
+        },
+        "Cross Gradient Booster (Random Forest)": {
+            "training_time": 4.08979,
+            "evaluation_time": 0.01829
+        }
+    },
+    "30 seconds": {
+        "Gaussian Naive Bayes": {
+            "training_time": 0.00293,
+            "evaluation_time": 0.00206
+        },
+        "Bernoulli Naive Bayes": {
+            "training_time": 0.003,
+            "evaluation_time": 0.00211
+        },
+        "Multinomial Naive Bayes": {
+            "training_time": 0.007,
+            "evaluation_time": 0.00206
+        },
+        "Support Vector Machine": {
+            "training_time": 0.02707,
+            "evaluation_time": 0.0125
+        },
+        "K-Nearest Neighbors": {
+            "training_time": 0.0,
+            "evaluation_time": 0.03298
+        },
+        "Decision Trees": {
+            "training_time": 0.0422,
+            "evaluation_time": 0.00103
+        },
+        "Random Forest": {
+            "training_time": 3.94281,
+            "evaluation_time": 0.04289
+        },
+        "Gradient Boosting": {
+            "training_time": 13.25561,
+            "evaluation_time": 0.01454
+        },
+        "Cross Gradient Booster": {
+            "training_time": 6.48324,
+            "evaluation_time": 0.02177
+        },
+        "Cross Gradient Booster (Random Forest)": {
+            "training_time": 1.77721,
+            "evaluation_time": 0.01492
+        }
+    }
+}

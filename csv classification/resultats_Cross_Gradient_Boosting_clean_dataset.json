@@ -1,0 +1,13 @@
+{
+    "3 seconds": {
+        "Cross Gradient Boosting": {
+            "accuracy": 0.89289,
+            "precision": 0.89364,
+            "recall": 0.89289,
+            "f1_score": 0.89294,
+            "roc_auc": 0.99294,
+            "accuracy_gap": 0.10636,
+            "f1_gap": 0.10631
+        }
+    }
+}

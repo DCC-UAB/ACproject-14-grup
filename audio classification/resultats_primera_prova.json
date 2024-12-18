@@ -1,0 +1,232 @@
+{
+    "audio": {
+        "Gaussian Naive Bayes": {
+            "accuracy": [
+                0.45
+            ],
+            "precision": [
+                0.44009
+            ],
+            "recall": [
+                0.45
+            ],
+            "f1_score": [
+                0.41765
+            ],
+            "roc_auc": [
+                0.85521
+            ],
+            "accuracy_gap": [
+                -0.00695
+            ],
+            "f1_gap": [
+                -0.01308
+            ]
+        },
+        "Bernoulli Naive Bayes": {
+            "accuracy": [
+                0.07
+            ],
+            "precision": [
+                0.00492
+            ],
+            "recall": [
+                0.07
+            ],
+            "f1_score": [
+                0.0092
+            ],
+            "roc_auc": [
+                0.50261
+            ],
+            "accuracy_gap": [
+                0.06016
+            ],
+            "f1_gap": [
+                0.05445
+            ]
+        },
+        "Multinomial Naive Bayes": {
+            "accuracy": [
+                0.38
+            ],
+            "precision": [
+                0.45286
+            ],
+            "recall": [
+                0.38
+            ],
+            "f1_score": [
+                0.34237
+            ],
+            "roc_auc": [
+                0.82883
+            ],
+            "accuracy_gap": [
+                0.02676
+            ],
+            "f1_gap": [
+                0.01736
+            ]
+        },
+        "Support Vector Machine": {
+            "accuracy": [
+                0.655
+            ],
+            "precision": [
+                0.69553
+            ],
+            "recall": [
+                0.655
+            ],
+            "f1_score": [
+                0.66009
+            ],
+            "roc_auc": [],
+            "accuracy_gap": [
+                0.1072
+            ],
+            "f1_gap": [
+                0.10109
+            ]
+        },
+        "K-Nearest Neighbors": {
+            "accuracy": [
+                0.62
+            ],
+            "precision": [
+                0.64363
+            ],
+            "recall": [
+                0.62
+            ],
+            "f1_score": [
+                0.61779
+            ],
+            "roc_auc": [
+                0.92165
+            ],
+            "accuracy_gap": [
+                0.03332
+            ],
+            "f1_gap": [
+                0.03061
+            ]
+        },
+        "Decision Trees": {
+            "accuracy": [
+                0.425
+            ],
+            "precision": [
+                0.47013
+            ],
+            "recall": [
+                0.425
+            ],
+            "f1_score": [
+                0.43852
+            ],
+            "roc_auc": [
+                0.67429
+            ],
+            "accuracy_gap": [
+                0.575
+            ],
+            "f1_gap": [
+                0.56148
+            ]
+        },
+        "Random Forest": {
+            "accuracy": [
+                0.695
+            ],
+            "precision": [
+                0.72819
+            ],
+            "recall": [
+                0.695
+            ],
+            "f1_score": [
+                0.70378
+            ],
+            "roc_auc": [
+                0.9404
+            ],
+            "accuracy_gap": [
+                0.305
+            ],
+            "f1_gap": [
+                0.29622
+            ]
+        },
+        "Gradient Boosting": {
+            "accuracy": [
+                0.65
+            ],
+            "precision": [
+                0.6993
+            ],
+            "recall": [
+                0.65
+            ],
+            "f1_score": [
+                0.6617
+            ],
+            "roc_auc": [
+                0.92631
+            ],
+            "accuracy_gap": [
+                0.35
+            ],
+            "f1_gap": [
+                0.3383
+            ]
+        },
+        "Cross Gradient Booster": {
+            "accuracy": [
+                0.655
+            ],
+            "precision": [
+                0.68872
+            ],
+            "recall": [
+                0.655
+            ],
+            "f1_score": [
+                0.66595
+            ],
+            "roc_auc": [
+                0.93771
+            ],
+            "accuracy_gap": [
+                0.345
+            ],
+            "f1_gap": [
+                0.33405
+            ]
+        },
+        "Cross Gradient Booster (Random Forest)": {
+            "accuracy": [
+                0.585
+            ],
+            "precision": [
+                0.60147
+            ],
+            "recall": [
+                0.585
+            ],
+            "f1_score": [
+                0.57996
+            ],
+            "roc_auc": [
+                0.91439
+            ],
+            "accuracy_gap": [
+                0.3374
+            ],
+            "f1_gap": [
+                0.34154
+            ]
+        }
+    }
+}

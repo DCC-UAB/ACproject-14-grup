@@ -1,0 +1,23 @@
+{
+    "Random Forest (GS+CV+PCA)": {
+        "accuracy": 0.90891,
+        "precision": 0.91048,
+        "recall": 0.90891,
+        "f1_score": 0.90864,
+        "roc_auc": 0.99184,
+        "accuracy_gap": 0.09059,
+        "f1_gap": 0.09086,
+        "temps_train": 48.4764,
+        "temps_predict": 0.29838,
+        "temps_total": 48.77478,
+        "cross_val_scores": [
+            0.9119119119119119,
+            0.9169169169169169,
+            0.8988988988988988,
+            0.9099099099099099,
+            0.9099099099099099
+        ],
+        "cross_val_mean": 0.9095095095095095,
+        "n_components_pca": 75
+    }
+}

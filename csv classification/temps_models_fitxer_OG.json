@@ -1,0 +1,23 @@
+{
+    "3 seconds": {
+        "Random Forest": {
+            "title": "Random Forest",
+            "accuracy": 0.80931,
+            "train_time": 53.78627824783325,
+            "pred_time": 0.31091904640197754
+        },
+        "Gradient Boosting": {
+            "title": "Gradient Boosting",
+            "accuracy": 0.83133,
+            "train_time": 196.23420310020447,
+            "pred_time": 0.028003931045532227
+        },
+        "Cross Gradient Booster": {
+            "title": "Cross Gradient Booster",
+            "accuracy": 0.91692,
+            "train_time": 35.12692642211914,
+            "pred_time": 0.15487980842590332
+        }
+    },
+    "30 seconds": {}
+}

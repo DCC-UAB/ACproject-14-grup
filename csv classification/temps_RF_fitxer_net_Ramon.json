@@ -1,0 +1,11 @@
+{
+    "3 seconds": {
+        "Random Forest": {
+            "title": "Random Forest",
+            "accuracy": 0.8018,
+            "train_time": 23.97737431526184,
+            "pred_time": 0.19103240966796875
+        }
+    },
+    "30 seconds": {}
+}

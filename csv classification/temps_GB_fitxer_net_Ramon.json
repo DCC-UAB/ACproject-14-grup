@@ -1,0 +1,11 @@
+{
+    "3 seconds": {
+        "Gradient Boosting": {
+            "title": "Gradient Boosting",
+            "accuracy": 0.8008,
+            "train_time": 51.149417877197266,
+            "pred_time": 0.046352386474609375
+        }
+    },
+    "30 seconds": {}
+}
