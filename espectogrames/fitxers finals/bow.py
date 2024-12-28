@@ -22,7 +22,7 @@ import threading
 
 # Funció per crear el diccionari visual
 class VisualBoW:
-    def __init__(self, n_clusters=50):
+    def __init__(self, n_clusters=100):
         self.n_clusters = n_clusters
         self.kmeans = None
         self.dictionary = None
@@ -49,7 +49,7 @@ def extract_sift_features(image):
     keypoints, descriptors = sift.detectAndCompute(image, None)
     return descriptors
 
-def processament_bow(base_dir, img_size=(128, 128), n_clusters=50):
+def processament_bow(base_dir, img_size=(128, 128), n_clusters=100):
     """Processa les dades utilitzant la tècnica Bag of Words."""
     data = []
     labels = []
