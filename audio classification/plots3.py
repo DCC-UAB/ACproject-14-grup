@@ -23,11 +23,11 @@ if __name__ == "__main__":
     svm_json_accuracy = svm_models["audio"]["Support Vector Machine"]["accuracy"][0]
 
     # Crear llistes per al gràfic
-    models = ["SVM (Mean)", "Optimized SVM", "SVM (JSON)"]
+    models = ["SVM inici", "Grid Search SVM", "Cross Validation SVM"]
     accuracies = [
-        accuracy_mean,
+        svm_json_accuracy,
         optimized_svm_accuracy,
-        svm_json_accuracy
+        accuracy_mean
     ]
 
     # Gràfic

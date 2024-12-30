@@ -36,34 +36,44 @@ def divisio_dades(X, y, test_size=0.2):
 
 
 if __name__ == "__main__":
-
     current_dir = Path(__file__).parent
 
     # Construir el camí als csv
-    cami_audio = current_dir.parent / "audio classification" / "audio_features_prova2.csv"
-    # cami_csv_30s = current_dir.parent / "datasets" / "Data1" / "features_30_sec.csv"
+    cami_csv_3s = current_dir.parent / "datasets" / "Data1" / "features_3_sec.csv"
 
-    dataaudio = pd.read_csv(cami_audio)
-    # data30s = pd.read_csv(cami_csv_30s)
+    data3s = pd.read_csv(cami_csv_3s)
+
+    # Diagnòstic: Comprovar les columnes del dataset
+    print("Columnes del dataset:", data3s.columns)
+
+    # Comprovar si la columna 'label' existeix
+    if 'label' not in data3s.columns:
+        print("Error: La columna 'label' no existeix al dataset.")
+        exit()
 
     # Encode label
-    data = codificar_label(dataaudio)
-    
+    data = codificar_label(data3s)
+
     # Define X and y and normalize
     X, y = definirXY_normalitzar(data)
 
     # Split data
     X_train, X_test, y_train, y_test = divisio_dades(X, y)
 
-    model = GradientBoostingClassifier(n_estimators=500, learning_rate=0.15, max_depth=10, min_samples_leaf=12, min_samples_split=2)
-
+    model = RandomForestClassifier(n_estimators=500, max_depth=None, min_samples_split=2, 
+                                    min_samples_leaf=1, max_features='sqrt', bootstrap=False)
+    
     model.fit(X_train, y_train)
     preds = model.predict(X_test)
 
-    confusion_matr = confusion_matrix(y_test, preds) #normalize = 'true'
-    plt.figure(figsize = (16, 9))
-    sns.heatmap(confusion_matr, cmap="Blues", annot=True, 
-                xticklabels = ["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"],
-            yticklabels=["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"]);
-    plt.savefig("conf matrix")
+    confusion_matr = confusion_matrix(y_test, preds, normalize='true') * 100  # Normalize and convert to percentage
+    plt.figure(figsize=(16, 9))
+    sns.heatmap(confusion_matr, cmap="Blues", annot=True, fmt=".2f%%", 
+                xticklabels=["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"],
+                yticklabels=["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"])
+    plt.title("Matriu de Confusió Normalitzada (%)", fontsize=16)
+    plt.xlabel("Predicted Label", fontsize=12)
+    plt.ylabel("True Label", fontsize=12)
+    plt.tight_layout()
+    plt.savefig("conf_matrix_percentage.png")
     plt.show()

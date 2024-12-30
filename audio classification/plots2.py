@@ -16,8 +16,8 @@ def shorten_model_names(names):
     return [name.replace("Naive Bayes", "NB")
                 .replace("Support Vector Machine", "SVM")
                 .replace("K-Nearest Neighbors", "KNN")
-                .replace("Decision Trees", "Trees")
-                .replace("Random Forest", "Forest")
+                .replace("Decision Trees", "Decision Trees")
+                .replace("Random Forest", "Random Forest")
                 .replace("Cross Gradient Booster", "Cross GB")
                 .replace("(Random Forest)", "RF") for name in names]
 
