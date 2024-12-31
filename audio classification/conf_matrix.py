@@ -1,4 +1,5 @@
 from pathlib import Path
+from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -35,15 +36,16 @@ def divisio_dades(X, y, test_size=0.2):
 
 if __name__ == "__main__":
 
-    current_dir = Path(__file__).parent
+    current_dir = Path(__file__).parent.resolve()  # Directori actual del script
+    
+    # Camí absolut al fitxer CSV
+    cami_csv = current_dir / "audio_features_prova2.csv"  # Ajusta el camí per apuntar al fitxer directament
 
-    # Construir el camí als csv
-    cami_audio = current_dir.parent / "audio classification" / "audio_features_prova2.csv"
-
-    dataaudio = pd.read_csv(cami_audio)
+    data = pd.read_csv(cami_csv)
+    # data30s = pd.read_csv(cami_csv_30s)
 
     # Encode label
-    data = codificar_label(dataaudio)
+    data = codificar_label(data)
 
     # Define X and y and normalize
     X, y = definirXY_normalitzar(data)
@@ -51,11 +53,19 @@ if __name__ == "__main__":
     # Split data
     X_train, X_test, y_train, y_test = divisio_dades(X, y)
 
-    models_top = [(SVC(decision_function_shape="ovo", C=50, class_weight=None ,gamma='scale', kernel = 'rbf', probability=True), "Support Vector Machine")]
+    models_top = [(SVC(decision_function_shape="ovo", C=15, class_weight=None, degree = 2,
+                           gamma='scale', kernel = 'rbf', probability=True), "Support Vector Machine")
+    ]
 
-    # Cross validation
-    kfold = KFold(n_splits=100, random_state=111, shuffle=True)
 
     for model, name in models_top:
-        results = cross_val_score(model, X, y, cv=kfold)
-        print(f"{name} - Best Accuracy: {results.max()*100:.2f}%, Mean Accuracy: {results.mean()*100:.2f}%, Std: {results.std()*100:.2f}%")
+        model.fit(X_train, y_train)
+        preds = model.predict(X_test)
+
+        confusion_matr = confusion_matrix(y_test, preds, normalize='true') # Normalize the confusion matrix
+        plt.figure(figsize = (16, 9))
+        sns.heatmap(confusion_matr, cmap="Blues", annot=True, fmt=".2%", 
+                    xticklabels = ["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"],
+                    yticklabels=["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"]);
+        plt.savefig("conf_matrix_percentage.png")
+        plt.show()
