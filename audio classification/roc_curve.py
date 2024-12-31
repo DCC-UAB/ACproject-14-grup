@@ -48,7 +48,7 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = divisio_dades(X, y)
 
     # Model
-    model = SVC(decision_function_shape="ovo", C=15, class_weight=None, degree = 2,
+    model = SVC(decision_function_shape="ovo", C=50, class_weight=None, degree = 2,
                            gamma='scale', kernel = 'rbf', probability=True)
     
     model.fit(X_train, y_train)

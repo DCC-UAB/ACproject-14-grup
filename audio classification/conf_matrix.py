@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # Split data
     X_train, X_test, y_train, y_test = divisio_dades(X, y)
 
-    models_top = [(SVC(decision_function_shape="ovo", C=15, class_weight=None, degree = 2,
+    models_top = [(SVC(decision_function_shape="ovo", C=50, class_weight=None, degree = 2,
                            gamma='scale', kernel = 'rbf', probability=True), "Support Vector Machine")
     ]
 
