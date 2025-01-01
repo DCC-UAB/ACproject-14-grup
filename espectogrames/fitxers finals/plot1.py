@@ -17,9 +17,9 @@ def generar_comparacio_plots(resultats_original, resultats_augment, resultats_ho
     original, augmentat i HOG features.
     """
     models = list(resultats_original.keys())
-    accuracies_original = [resultats_original[model].get("accuracy", 0) for model in models]
-    accuracies_augment = [resultats_augment[model].get("accuracy", 0) for model in models]
-    accuracies_hog = [resultats_hog[model].get("accuracy", 0) for model in models]
+    accuracies_original = [resultats_original[model].get("recall", 0) for model in models]
+    accuracies_augment = [resultats_augment[model].get("recall", 0) for model in models]
+    accuracies_hog = [resultats_hog[model].get("recall", 0) for model in models]
 
     x = np.arange(len(models))
     width = 0.25
@@ -31,13 +31,13 @@ def generar_comparacio_plots(resultats_original, resultats_augment, resultats_ho
     plt.bar(x + width, accuracies_hog, width=width, label="HOG Features", alpha=0.8)
 
     plt.xticks(x, models, rotation=45, ha="right")
-    plt.ylabel("Accuracy")
-    plt.title("Comparació d'Accuracy: Original vs Augmentat vs HOG Features")
+    plt.ylabel("Precision")
+    plt.title("Comparació de Recall: Original vs Augmentat vs HOG Features")
     plt.legend()
     plt.tight_layout()
 
     # Guardar el plot com a fitxer d'imatge
-    plt.savefig("comparacio_accuracy.png", dpi=300)  # Guarda com a imatge PNG
+    plt.savefig("comparacio_recall.png", dpi=300)  # Guarda com a imatge PNG
     print("[SUCCESS] El plot s'ha guardat com a 'comparacio_accuracy.png'.")
     plt.show()
 
