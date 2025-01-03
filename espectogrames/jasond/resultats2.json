@@ -1,0 +1,65 @@
+{
+    "Gaussian Naive Bayes": {
+        "accuracy": 0.36,
+        "precision": 0.4062,
+        "recall": 0.36,
+        "f1_score": 0.35175,
+        "roc_auc": 0.67343,
+        "accuracy_gap": 0.17942,
+        "f1_gap": 0.16682
+    },
+    "Bernoulli Naive Bayes": {
+        "accuracy": 0.28,
+        "precision": 0.27076,
+        "recall": 0.28,
+        "f1_score": 0.24815,
+        "roc_auc": 0.69538,
+        "accuracy_gap": 0.12926,
+        "f1_gap": 0.14334
+    },
+    "Multinomial Naive Bayes": {
+        "accuracy": 0.37,
+        "precision": 0.47785,
+        "recall": 0.37,
+        "f1_score": 0.36061,
+        "roc_auc": 0.76508,
+        "accuracy_gap": 0.16442,
+        "f1_gap": 0.17083
+    },
+    "K-Nearest Neighbors": {
+        "accuracy": 0.295,
+        "precision": 0.21086,
+        "recall": 0.295,
+        "f1_score": 0.2239,
+        "roc_auc": 0.77849,
+        "accuracy_gap": 0.04042,
+        "f1_gap": 0.0577
+    },
+    "Decision Trees": {
+        "accuracy": 0.275,
+        "precision": 0.28788,
+        "recall": 0.275,
+        "f1_score": 0.27814,
+        "roc_auc": 0.59688,
+        "accuracy_gap": 0.72375,
+        "f1_gap": 0.72061
+    },
+    "Random Forest": {
+        "accuracy": 0.515,
+        "precision": 0.5323,
+        "recall": 0.515,
+        "f1_score": 0.51837,
+        "roc_auc": 0.85797,
+        "accuracy_gap": 0.48375,
+        "f1_gap": 0.48038
+    },
+    "Cross Gradient Booster (Random Forest)": {
+        "accuracy": 0.455,
+        "precision": 0.45252,
+        "recall": 0.455,
+        "f1_score": 0.44888,
+        "roc_auc": 0.8385,
+        "accuracy_gap": 0.52623,
+        "f1_gap": 0.53231
+    }
+}

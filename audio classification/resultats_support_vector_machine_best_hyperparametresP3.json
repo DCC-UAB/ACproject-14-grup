@@ -1,0 +1,13 @@
+{
+    "audio": {
+        "Optimized SVMClassifier": {
+            "accuracy": 0.9398,
+            "precision": 0.9409,
+            "recall": 0.9398,
+            "f1_score": 0.93974,
+            "roc_auc": 0.99687,
+            "accuracy_gap": 0.0602,
+            "f1_gap": 0.06026
+        }
+    }
+}
